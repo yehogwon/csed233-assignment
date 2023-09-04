@@ -12,8 +12,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Check Build Success
-      working-directory: ./build
-      run: cmake .. && make
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
     - name: Perform CTest
-      working-directory: ./build
-      run: ctest
+      run: |
+        cd build
+        ctest
