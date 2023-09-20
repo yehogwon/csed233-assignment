@@ -103,19 +103,52 @@ void task_3(ofstream &fout, InstructionSequence *instr_seq) {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
+  int *arr = new int[instr_seq->length], length = 0;
   for (int i = 0; i < instr_seq->length; i++) {
     string command = instr_seq->instructions[i].command;
+    int val = instr_seq->instructions[i].value;
     if (command.compare("insert") == 0) {
       /* TODO: Implement */
-
+      if (length == 0) {
+        arr[0] = val;
+        length++;
+      } else {
+        int idx = 0;
+        while (idx < length && arr[idx] < val) {
+          idx++;
+        }
+        for (int j = length; j > idx; j--) {
+          arr[j] = arr[j - 1];
+        }
+        arr[idx] = val;
+        length++;
+      }
     } else if (command.compare("delete") == 0) {
       /* TODO: Implement */
-
+      if (length == 0) {
+        answer = "error";
+        break;
+      }
+      int idx = val;
+      if (idx >= length) {
+        answer = "error";
+        break;
+      }
+      for (int j = idx; j < length - 1; j++) {
+        arr[j] = arr[j + 1];
+      }
+      length--;
     } else {
       cerr << "Invalid command" << endl;
       exit(-1);
     }
   }
+
+  if (answer != "error")
+    for (int i = 0; i < length; i++)
+      answer += to_string(arr[i]) + " "; // FIRE: What about a trailing space?
+
+  delete arr;
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
 
