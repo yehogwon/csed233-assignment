@@ -11,11 +11,30 @@ int main(int argc, char **argv) {
     }
 
     std::string test_name = argv[1];
+    
+    std::string temp_file = "/tmp/pa1.test." + std::to_string(std::rand());
+    std::ofstream temp_out(temp_file);
 
     if (test_name == "Task1") {
-        return 1; // to be implemented
+        task_1(temp_out);
+        temp_out.close();
+
+        std::ifstream temp_in(temp_file);
+        std::string full_content = "", line;
+        while (std::getline(temp_in, line)) full_content += line;
+        std::cout << full_content << std::endl;
+
+        return full_content == "[Task 1]4\n";
     } else if (test_name == "Task2") {
-        return 1; // to be implemented
+        task_2(temp_out);
+        temp_out.close();
+
+        std::ifstream temp_in(temp_file);
+        std::string full_content = "", line;
+        while (std::getline(temp_in, line)) full_content += line;
+        std::cout << full_content << std::endl;
+
+        return full_content == "[Task 2]2\n";
     } else if (test_name == "Task3") {
         return 1; // to be implemented
     } else if (test_name == "Task4") {
