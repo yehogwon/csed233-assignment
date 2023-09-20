@@ -12,7 +12,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 enable_testing()
 
-add_subdirectory(pa1)
-add_subdirectory(pa2)
-add_subdirectory(pa3)
-add_subdirectory(pa4)
+function(add_pa pa_name)
+    set(${pa_name}_ROOT ${PROJECT_SOURCE_DIR}/${pa_name} CACHE INTERNAL "paroots")
+    add_subdirectory(${pa_name})
+endfunction(add_pa)
+
+add_pa(pa1)
+add_pa(pa2)
+add_pa(pa3)
+add_pa(pa4)
