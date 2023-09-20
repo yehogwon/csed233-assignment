@@ -175,6 +175,26 @@ void push(char exp, Top* top){
 }
 
 bool MatchingParentheses(string ari_exp) { 
+  Top *top = new Top;
+  for (char c : ari_exp) {
+    if (c == '(' || c == '{' || c == '[') {
+      push(c, top);
+    } else if (c == ')' || c == '}' || c == ']') {
+      if (top->count == 0) {
+        return false;
+      } else {
+        char top_char = pop(top);
+        if (c == ')' && top_char != '(') {
+          return false;
+        } else if (c == '}' && top_char != '{') {
+          return false;
+        } else if (c == ']' && top_char != '[') {
+          return false;
+        }
+      }
+    }
+  }
+  return top->count == 0;
 }
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
