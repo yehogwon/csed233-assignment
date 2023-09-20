@@ -1,4 +1,4 @@
-include_directories(${PA01_ROOT}/include)
+include_directories(${PA3_ROOT}/include)
 
 add_subdirectory(
     src

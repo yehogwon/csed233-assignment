@@ -13,7 +13,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 enable_testing()
 
 function(add_pa pa_name)
-    set(${pa_name}_ROOT ${PROJECT_SOURCE_DIR}/${pa_name} CACHE INTERNAL "paroots")
+    string(TOUPPER ${pa_name} pa_name_upper)
+    set(${pa_name_upper}_ROOT ${PROJECT_SOURCE_DIR}/${pa_name} CACHE INTERNAL "paroots")
     add_subdirectory(${pa_name})
 endfunction(add_pa)
 
