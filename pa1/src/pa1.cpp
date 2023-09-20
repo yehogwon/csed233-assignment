@@ -30,7 +30,7 @@ using namespace std;
         4: O( 2^n )
 */
 void task_1(ofstream &fout) {
-    int answer = 0;  // TODO: Change to your answer
+    int answer = 4;  // TODO: Change to your answer
 
     fout << "[Task 1]" << endl;
     fout << answer << endl;
@@ -66,7 +66,7 @@ void task_1(ofstream &fout) {
         4: O( n^2 )
 */
 void task_2(ofstream &fout) {
-    int answer = 0;  // TODO: Change to your answer
+    int answer = 2;  // TODO: Change to your answer
 
     fout << "[Task 2]" << endl;
     fout << answer << endl;
@@ -159,17 +159,22 @@ struct Top {
 /////////////////////////////////////////////////////////
 //////////  TODO: Implement From Here      //////////////
 char pop(Top* top){
-	return ' ';
+  char val = top->head->value;
+  top->head = top->head->next;
+  top->count--;
+  return val;
 }
 
 
 void push(char exp, Top* top){
-
-
+  stack* new_node = new stack;
+  new_node->value = exp;
+  new_node->next = top->head;
+  top->head = new_node;
+  top->count++;
 }
 
 bool MatchingParentheses(string ari_exp) { 
-	return true;
 }
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
