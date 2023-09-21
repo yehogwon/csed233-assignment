@@ -13,6 +13,11 @@
     std::ofstream temp_out(temp_file); \
     std::ifstream temp_in(temp_file);
 
+#define GET_FILE_STREAM_CONTENT(x) \
+    std::string x = "", line; \
+    while (std::getline(temp_in, line)) x += line; \
+    strip(x);
+
 #define CLOSE_FILE_STREAMS \
     temp_out.close(); \
     temp_in.close(); \
@@ -35,7 +40,7 @@ std::string random_string(const int len) {
 
 inline void lstrip(std::string &s) {
     s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
-        return !std::isspace(ch);
+        return !std::isspace(ch) && ch != '\n';
     }));
 }
 
@@ -54,16 +59,18 @@ inline void strip(std::string &s) {
 bool test_no_args(function_no_args fn, const std::string &expected_output) {
     CREATE_FILE_STREAMS
     fn(temp_out);
-    std::string full_content = "", line;
-    while (std::getline(temp_in, line)) full_content += line;
-    strip(full_content);
+    GET_FILE_STREAM_CONTENT(full_content)
     CLOSE_FILE_STREAMS
     return full_content == expected_output;
 }
 
 template <typename T>
-bool test_1_args(const std::pair<T, std::string> &test_case) {
-    return false;
+bool test_1_args(function_1_args<T> fn, const std::pair<T, std::string> &test_case) {
+    CREATE_FILE_STREAMS
+    fn(temp_out, test_case.first);
+    GET_FILE_STREAM_CONTENT(full_content)
+    CLOSE_FILE_STREAMS
+    return full_content == test_case.second;
 }
 
 int main(int argc, char **argv) {
@@ -81,7 +88,26 @@ int main(int argc, char **argv) {
     } else if (test_name == "Task2") {
         return !test_no_args(task_2, "[Task 2]2");
     } else if (test_name == "Task3") {
-        return 1; // to be implemented
+        std::vector<std::pair<const char*, std::string>> test_cases = {
+            {"[('insert',2),('insert',1),('insert',3)]", "1 2 3"},
+            {"[('insert',0),('insert',0),('insert',1)]", "0 0 1"},
+            {"[('insert',0),('insert',1),('delete',0)]", "1"},
+            {"[('insert',0),('delete',1)]", "error"},
+            {"[('delete',0)]", "error"},
+            {"[('insert',5),('insert',9),('delete',0),('insert',1),('insert',2)]", "1 2 9"}
+        };
+        
+        for (const auto &test_case_ : test_cases) {
+            std::pair<InstructionSequence*, std::string> test_case = {
+                ParseInstructions(test_case_.first), 
+                "[Task 3]" + test_case_.second
+            };
+            if (!test_1_args<InstructionSequence*>(task_3, test_case)) {
+                std::cout << "FAIL on test case: " << test_case_.first << " -> " << test_case.second << std::endl;
+                return 1;
+            }
+        }
+        return 0;
     } else if (test_name == "Task4") {
         return 1; // to be implemented
     } else if (test_name == "Task5") {
