@@ -109,7 +109,25 @@ int main(int argc, char **argv) {
         }
         return 0;
     } else if (test_name == "Task4") {
-        return 1; // to be implemented
+        std::vector<std::pair<std::string, std::string>> test_cases = {
+            {"[()]", "True"}, 
+            {"()(()){[]}", "True"}, 
+            {"((){[]}[({}())])", "True"}, 
+            {"{", "False"}, 
+            {"()({{}}]", "False"}
+        };
+        
+        for (const auto &test_case_ : test_cases) {
+            std::pair<std::string, std::string> test_case = {
+                test_case_.first, 
+                "[Task 4]" + test_case_.second
+            };
+            if (!test_1_args<std::string>(task_4, test_case)) {
+                std::cout << "FAIL on test case: " << test_case_.first << " -> " << test_case.second << std::endl;
+                return 1;
+            }
+        }
+        return 0;
     } else if (test_name == "Task5") {
         return 1; // to be implemented
     } else if (test_name == "Task6") {
