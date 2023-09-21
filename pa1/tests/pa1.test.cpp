@@ -131,7 +131,25 @@ int main(int argc, char **argv) {
     } else if (test_name == "Task5") {
         return 1; // to be implemented
     } else if (test_name == "Task6") {
-        return 1; // to be implemented
+        std::vector<std::pair<const char*, std::string>> test_cases = {
+            {"[('e', 5), ('e', 3), ('d', NULL), ('show', NULL)]", "3"}, 
+            {"[('e', 5), ('e', 3), ('d', NULL), ('e', 6), ('num', NULL)]", "2"}, 
+            {"[('e', 3), ('d', NULL), ('show', NULL)]", "empty"}, 
+            {"[('e', 5), ('d', NULL), ('e', 3), ('e', 6), ('e', 9), ('e', 1), ('d', NULL), ('d', NULL), ('e', 7), ('e', 2), ('show', NULL)]", "9 1 7 2"}, 
+            {"[('e', 1), ('e', 2), ('e', 3), ('e', 4), ('e', 5), ('e', 6), ('show', NULL)]", "1 2 3 4 5"}
+        };
+        
+        for (const auto &test_case_ : test_cases) {
+            std::pair<InstructionSequence*, std::string> test_case = {
+                ParseInstructions(test_case_.first), 
+                "[Task 6]" + test_case_.second
+            };
+            if (!test_1_args<InstructionSequence*>(task_6, test_case)) {
+                std::cout << "FAIL on test case: " << test_case_.first << " -> " << test_case.second << std::endl;
+                return 1;
+            }
+        }
+        return 0;
     } else {
         std::cout << "Invalid test name" << std::endl;
         return -2; // invalid test name
