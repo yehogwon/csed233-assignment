@@ -61,6 +61,7 @@ bool test_no_args(function_no_args fn, const std::string &expected_output) {
     fn(temp_out);
     GET_FILE_STREAM_CONTENT(full_content)
     CLOSE_FILE_STREAMS
+    std::cout << "GOT: " << full_content << std::endl;
     return full_content == expected_output;
 }
 
@@ -70,6 +71,7 @@ bool test_1_args(function_1_args<T> fn, const std::pair<T, std::string> &test_ca
     fn(temp_out, test_case.first);
     GET_FILE_STREAM_CONTENT(full_content)
     CLOSE_FILE_STREAMS
+    std::cout << "GOT: " << full_content << std::endl;
     return full_content == test_case.second;
 }
 

@@ -146,7 +146,7 @@ void task_3(ofstream &fout, InstructionSequence *instr_seq) {
 
   if (answer != "error")
     for (int i = 0; i < length; i++)
-      answer += to_string(arr[i]) + " "; // FIRE: What about a trailing space?
+      answer += to_string(arr[i]) + " "; // trainling spaces do not matter
 
   delete[] arr;
   ///////////      End of Implementation      /////////////
@@ -274,28 +274,42 @@ void task_5(ofstream &fout, InstructionSequence *instr_seq) {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
-
+    int head = 0; // the index of the first digit of the heading item
     for (int i = 0; i < instr_seq->length; i++) {
         string command = instr_seq->instructions[i].command;
         int value = instr_seq->instructions[i].value;
 
         if (command.compare("e") == 0) {
-
+          queue += to_string(value) + " ";
+          size++;
         } else if (command.compare("d") == 0) {
-
+          if (size == 0) {
+            answer = "error";
+            break; // FIRE: Check if this is correct
+          }
+          while (queue[head++] != ' ');
+          size--;
         } else if (command.compare("show") == 0) {
-
+          if (size == 0) {
+            answer += "empty";
+            break; // FIRE: Check if this is correct
+          }
+          int start_ = head;
+          int count = 0;
+          while (true) {
+            answer += queue[head++];
+            if (queue[head] == ' ' && ++count >= size) break;
+          }
+          answer += " ";
         } else if (command.compare("size") == 0) {
-
+          answer += to_string(size) + " ";
         } else if (command.compare("isEmpty") == 0) {
-
-            if (!answer.empty()) {
-
-            } else if (answer.empty()) {
-
-            }
+            answer += size == 0 ? "T" : "F";
+            answer += " ";
         } else if (command.compare("clear") == 0) {
-
+            queue = "";
+            size = 0;
+            head = 0;
         } else {
             cerr << "Invalid command" << endl;
             exit(-1);
