@@ -8,6 +8,16 @@
 #include <cstdio>
 #include <unistd.h>
 
+#define CREATE_FILE_STREAMS \
+    std::string temp_file = "/tmp/pa1.test." + random_string(10); \
+    std::ofstream temp_out(temp_file); \
+    std::ifstream temp_in(temp_file);
+
+#define CLOSE_FILE_STREAMS \
+    temp_out.close(); \
+    temp_in.close(); \
+    std::remove(temp_file.c_str());
+
 using function_no_args = void (*)(std::ofstream&);
 
 template <typename T>
@@ -42,18 +52,12 @@ inline void strip(std::string &s) {
 }
 
 bool test_no_args(function_no_args fn, const std::string &expected_output) {
-    std::string temp_file = "/tmp/pa1.test." + random_string(10);
-    std::ofstream temp_out(temp_file);
+    CREATE_FILE_STREAMS
     fn(temp_out);
-    temp_out.close();
-
-    std::ifstream temp_in(temp_file);
     std::string full_content = "", line;
     while (std::getline(temp_in, line)) full_content += line;
     strip(full_content);
-    temp_in.close();
-
-    std::remove(temp_file.c_str());
+    CLOSE_FILE_STREAMS
     return full_content == expected_output;
 }
 
