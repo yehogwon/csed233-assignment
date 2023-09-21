@@ -146,7 +146,7 @@ void task_3(ofstream &fout, InstructionSequence *instr_seq) {
 
   if (answer != "error")
     for (int i = 0; i < length; i++)
-      answer += to_string(arr[i]) + " "; // FIRE: What about a trailing space?
+      answer += to_string(arr[i]) + " "; // trainling spaces do not matter
 
   delete[] arr;
   ///////////      End of Implementation      /////////////
