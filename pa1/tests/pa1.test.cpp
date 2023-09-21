@@ -129,7 +129,25 @@ int main(int argc, char **argv) {
         }
         return 0;
     } else if (test_name == "Task5") {
-        return 1; // to be implemented
+        std::vector<std::pair<const char*, std::string>> test_cases = {
+            {"[('e', 4), ('e', 7), ('d', NULL), ('show', NULL)]", "7"}, 
+            {"[('e', 5), ('e', 2), ('d', NULL), ('size', NULL)]", "1"}, 
+            {"[('d', NULL), ('isEmpty', NULL)]", "error"}, 
+            {"[('e', 5), ('e', 2), ('d', NULL), ('e', 1), ('size', NULL), ('isEmpty', NULL), ('show', NULL)]", "2 F 2 1"}, 
+            {"[('e', 4), ('e', 7), ('e', 5), ('isEmpty', NULL), ('clear', NULL), ('isEmpty', NULL), ('show', NULL)]", "F T empty"}
+        };
+        
+        for (const auto &test_case_ : test_cases) {
+            std::pair<InstructionSequence*, std::string> test_case = {
+                ParseInstructions(test_case_.first), 
+                "[Task 5]" + test_case_.second
+            };
+            if (!test_1_args<InstructionSequence*>(task_5, test_case)) {
+                std::cout << "FAIL on test case: " << test_case_.first << " -> " << test_case.second << std::endl;
+                return 1;
+            }
+        }
+        return 0;
     } else if (test_name == "Task6") {
         std::vector<std::pair<const char*, std::string>> test_cases = {
             {"[('e', 5), ('e', 3), ('d', NULL), ('show', NULL)]", "3"}, 
