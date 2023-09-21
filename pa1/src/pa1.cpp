@@ -30,7 +30,7 @@ using namespace std;
         4: O( 2^n )
 */
 void task_1(ofstream &fout) {
-    int answer = 0;  // TODO: Change to your answer
+    int answer = 4;  // TODO: Change to your answer
 
     fout << "[Task 1]" << endl;
     fout << answer << endl;
@@ -66,7 +66,7 @@ void task_1(ofstream &fout) {
         4: O( n^2 )
 */
 void task_2(ofstream &fout) {
-    int answer = 0;  // TODO: Change to your answer
+    int answer = 2;  // TODO: Change to your answer
 
     fout << "[Task 2]" << endl;
     fout << answer << endl;
@@ -103,19 +103,52 @@ void task_3(ofstream &fout, InstructionSequence *instr_seq) {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
+  int *arr = new int[instr_seq->length], length = 0;
   for (int i = 0; i < instr_seq->length; i++) {
     string command = instr_seq->instructions[i].command;
+    int val = instr_seq->instructions[i].value;
     if (command.compare("insert") == 0) {
       /* TODO: Implement */
-
+      if (length == 0) {
+        arr[0] = val;
+        length++;
+      } else {
+        int idx = 0;
+        while (idx < length && arr[idx] < val) {
+          idx++;
+        }
+        for (int j = length; j > idx; j--) {
+          arr[j] = arr[j - 1];
+        }
+        arr[idx] = val;
+        length++;
+      }
     } else if (command.compare("delete") == 0) {
       /* TODO: Implement */
-
+      if (length == 0) {
+        answer = "error";
+        break;
+      }
+      int idx = val;
+      if (idx >= length) {
+        answer = "error";
+        break;
+      }
+      for (int j = idx; j < length - 1; j++) {
+        arr[j] = arr[j + 1];
+      }
+      length--;
     } else {
       cerr << "Invalid command" << endl;
       exit(-1);
     }
   }
+
+  if (answer != "error")
+    for (int i = 0; i < length; i++)
+      answer += to_string(arr[i]) + " "; // FIRE: What about a trailing space?
+
+  delete[] arr;
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
 
@@ -159,17 +192,42 @@ struct Top {
 /////////////////////////////////////////////////////////
 //////////  TODO: Implement From Here      //////////////
 char pop(Top* top){
-	return ' ';
+  char val = top->head->value;
+  top->head = top->head->next;
+  top->count--;
+  return val;
 }
 
 
 void push(char exp, Top* top){
-
-
+  stack* new_node = new stack;
+  new_node->value = exp;
+  new_node->next = top->head;
+  top->head = new_node;
+  top->count++;
 }
 
 bool MatchingParentheses(string ari_exp) { 
-	return true;
+  Top *top = new Top;
+  for (char c : ari_exp) {
+    if (c == '(' || c == '{' || c == '[') {
+      push(c, top);
+    } else if (c == ')' || c == '}' || c == ']') {
+      if (top->count == 0) {
+        return false;
+      } else {
+        char top_char = pop(top);
+        if (c == ')' && top_char != '(') {
+          return false;
+        } else if (c == '}' && top_char != '{') {
+          return false;
+        } else if (c == ']' && top_char != '[') {
+          return false;
+        }
+      }
+    }
+  }
+  return top->count == 0;
 }
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
@@ -305,7 +363,7 @@ void task_6(ofstream &fout, InstructionSequence *instr_seq) {
         }
     }
 }
-
+#ifndef DOING_CTEST // FIRE: CLEAR THIS LINE (DO NOE REMOVE THIS LINE THOUGH)
 int main(int argc, char **argv) {
   string filename = "submit.txt";
   int task_num = 0;
@@ -384,4 +442,4 @@ int main(int argc, char **argv) {
   fout.close();
   return 0;
 }
-
+#endif // FIRE: CLEAR THIS LINE (DO NOE REMOVE THIS LINE THOUGH)
