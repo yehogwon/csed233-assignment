@@ -20,4 +20,4 @@ jobs:
     - name: Perform CTest
       run: |
         cd build
-        ctest
+        ctest -V
