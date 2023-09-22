@@ -6,7 +6,9 @@
 #include <string>
 #include <algorithm>
 #include <cstdio>
+#include <fstream>
 #include <unistd.h>
+#include <map>
 
 #define CREATE_FILE_STREAMS \
     std::string temp_file = "/tmp/pa1.test." + random_string(10); \
@@ -76,96 +78,75 @@ bool test_1_args(function_1_args<T> fn, const std::pair<T, std::string> &test_ca
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2) { // invalid arguments (requires test name)
+    if (!(argc == 2 || argc == 3)) { // invalid arguments (requires test name)
         std::cout << "Invalid arguments" << std::endl;
         std::cout << "Usage: ./pa1.test.out <test_name>" << std::endl;
+        std::cout << "Or" << std::endl;
+        std::cout << "Usage: ./pa1.test.out <test_name> <answer_dir_path>" << std::endl;
         return -1;
     }
 
     srand(time(NULL) * getpid());
     std::string test_name = argv[1];
+    std::string test_name_lower = test_name;
+    std::transform(test_name_lower.begin(), test_name_lower.end(), test_name_lower.begin(), ::tolower);
+    std::string prefix = "[" + test_name + "]";
+    prefix.insert(5, " ");
+
+    std::string data_path = argc == 2 ? "data/" : std::string(argv[2]);
+    std::string answer_path = data_path + test_name_lower + ".txt";
+
+    std::map<std::string, function_no_args> no_args_functions = {
+        {"Task1", task_1},
+        {"Task2", task_2},
+    };
+
+    std::map<std::string, function_1_args<InstructionSequence*>> one_args_functions = {
+        {"Task3", task_3},
+        {"Task5", task_5},
+        {"Task6", task_6},
+    };
+
+    std::map<std::string, function_1_args<std::string>> one_args_functions_str = {
+        {"Task4", task_4},
+    };
     
-    if (test_name == "Task1") {
-        return !test_no_args(task_1, "[Task 1]4");
-    } else if (test_name == "Task2") {
-        return !test_no_args(task_2, "[Task 2]2");
-    } else if (test_name == "Task3") {
-        std::vector<std::pair<const char*, std::string>> test_cases = {
-            {"[('insert',2),('insert',1),('insert',3)]", "1 2 3"},
-            {"[('insert',0),('insert',0),('insert',1)]", "0 0 1"},
-            {"[('insert',0),('insert',1),('delete',0)]", "1"},
-            {"[('insert',0),('delete',1)]", "error"},
-            {"[('delete',0)]", "error"},
-            {"[('insert',5),('insert',9),('delete',0),('insert',1),('insert',2)]", "1 2 9"}
-        };
+    if (test_name == "Task1" || test_name == "Task2") {
+        std::ifstream answer_in(answer_path);
+        std::string answer;
+        std::getline(answer_in, answer);
+        answer_in.close();
         
-        for (const auto &test_case_ : test_cases) {
+        answer = prefix + answer;
+        return !test_no_args(no_args_functions[test_name], answer);
+    } else if (test_name == "Task3" || test_name == "Task5" || test_name == "Task6") {
+        std::ifstream answer_in(answer_path);
+        std::string input, answer;
+
+        while (std::getline(answer_in, input) && std::getline(answer_in, answer)) {
+            strip(input);
             std::pair<InstructionSequence*, std::string> test_case = {
-                ParseInstructions(test_case_.first), 
-                "[Task 3]" + test_case_.second
+                ParseInstructions(input.c_str()), 
+                prefix + answer
             };
-            if (!test_1_args<InstructionSequence*>(task_3, test_case)) {
-                std::cout << "FAIL on test case: " << test_case_.first << " -> " << test_case.second << std::endl;
+            if (!test_1_args<InstructionSequence*>(one_args_functions[test_name], test_case)) {
+                std::cout << "FAIL on test case: " << input << " -> " << test_case.second << std::endl;
                 return 1;
             }
         }
         return 0;
     } else if (test_name == "Task4") {
-        std::vector<std::pair<std::string, std::string>> test_cases = {
-            {"[()]", "True"}, 
-            {"()(()){[]}", "True"}, 
-            {"((){[]}[({}())])", "True"}, 
-            {"{", "False"}, 
-            {"()({{}}]", "False"}
-        };
-        
-        for (const auto &test_case_ : test_cases) {
+        std::ifstream answer_in(answer_path);
+        std::string input, answer;
+
+        while (std::getline(answer_in, input) && std::getline(answer_in, answer)) {
+            strip(input);
             std::pair<std::string, std::string> test_case = {
-                test_case_.first, 
-                "[Task 4]" + test_case_.second
+                input,
+                prefix + answer
             };
-            if (!test_1_args<std::string>(task_4, test_case)) {
-                std::cout << "FAIL on test case: " << test_case_.first << " -> " << test_case.second << std::endl;
-                return 1;
-            }
-        }
-        return 0;
-    } else if (test_name == "Task5") {
-        std::vector<std::pair<const char*, std::string>> test_cases = {
-            {"[('e', 4), ('e', 7), ('d', NULL), ('show', NULL)]", "7"}, 
-            {"[('e', 5), ('e', 2), ('d', NULL), ('size', NULL)]", "1"}, 
-            {"[('d', NULL), ('isEmpty', NULL)]", "error"}, 
-            {"[('e', 5), ('e', 2), ('d', NULL), ('e', 1), ('size', NULL), ('isEmpty', NULL), ('show', NULL)]", "2 F 2 1"}, 
-            {"[('e', 4), ('e', 7), ('e', 5), ('isEmpty', NULL), ('clear', NULL), ('isEmpty', NULL), ('show', NULL)]", "F T empty"}
-        };
-        
-        for (const auto &test_case_ : test_cases) {
-            std::pair<InstructionSequence*, std::string> test_case = {
-                ParseInstructions(test_case_.first), 
-                "[Task 5]" + test_case_.second
-            };
-            if (!test_1_args<InstructionSequence*>(task_5, test_case)) {
-                std::cout << "FAIL on test case: " << test_case_.first << " -> " << test_case.second << std::endl;
-                return 1;
-            }
-        }
-        return 0;
-    } else if (test_name == "Task6") {
-        std::vector<std::pair<const char*, std::string>> test_cases = {
-            {"[('e', 5), ('e', 3), ('d', NULL), ('show', NULL)]", "3"}, 
-            {"[('e', 5), ('e', 3), ('d', NULL), ('e', 6), ('num', NULL)]", "2"}, 
-            {"[('e', 3), ('d', NULL), ('show', NULL)]", "empty"}, 
-            {"[('e', 5), ('d', NULL), ('e', 3), ('e', 6), ('e', 9), ('e', 1), ('d', NULL), ('d', NULL), ('e', 7), ('e', 2), ('show', NULL)]", "9 1 7 2"}, 
-            {"[('e', 1), ('e', 2), ('e', 3), ('e', 4), ('e', 5), ('e', 6), ('show', NULL)]", "1 2 3 4 5"}
-        };
-        
-        for (const auto &test_case_ : test_cases) {
-            std::pair<InstructionSequence*, std::string> test_case = {
-                ParseInstructions(test_case_.first), 
-                "[Task 6]" + test_case_.second
-            };
-            if (!test_1_args<InstructionSequence*>(task_6, test_case)) {
-                std::cout << "FAIL on test case: " << test_case_.first << " -> " << test_case.second << std::endl;
+            if (!test_1_args<std::string>(one_args_functions_str[test_name], test_case)) {
+                std::cout << "FAIL on test case: " << input << " -> " << test_case.second << std::endl;
                 return 1;
             }
         }
