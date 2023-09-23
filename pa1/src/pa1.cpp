@@ -211,6 +211,8 @@ void push(char exp, Top* top){
 
 bool MatchingParentheses(string ari_exp) { 
   Top *top = new Top;
+  top->count = 0;
+  top->head = NULL;
   for (char c : ari_exp) {
     if (c == '(' || c == '{' || c == '[') { // open
       push(c, top);
