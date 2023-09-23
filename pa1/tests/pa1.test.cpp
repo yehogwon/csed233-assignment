@@ -129,8 +129,9 @@ int main(int argc, char **argv) {
                 ParseInstructions(input.c_str()), 
                 prefix + answer
             };
+            std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
             if (!test_1_args<InstructionSequence*>(one_args_functions[test_name], test_case)) {
-                std::cout << "FAIL on test case: " << input << " -> " << test_case.second << std::endl;
+                std::cout << "Failed..." << std::endl;
                 return 1;
             }
         }
@@ -145,8 +146,9 @@ int main(int argc, char **argv) {
                 input,
                 prefix + answer
             };
+            std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
             if (!test_1_args<std::string>(one_args_functions_str[test_name], test_case)) {
-                std::cout << "FAIL on test case: " << input << " -> " << test_case.second << std::endl;
+                std::cout << "Failed..." << std::endl;
                 return 1;
             }
         }
