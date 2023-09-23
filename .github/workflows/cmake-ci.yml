@@ -16,7 +16,7 @@ jobs:
         mkdir build
         cd build
         cmake ..
-        make
+        make -j
     - name: Perform CTest
       run: |
         cd build
