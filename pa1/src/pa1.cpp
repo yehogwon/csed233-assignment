@@ -210,20 +210,14 @@ void push(char exp, Top* top){
 bool MatchingParentheses(string ari_exp) { 
   Top *top = new Top;
   for (char c : ari_exp) {
-    if (c == '(' || c == '{' || c == '[') {
+    if (c == '(' || c == '{' || c == '[') { // open
       push(c, top);
-    } else if (c == ')' || c == '}' || c == ']') {
-      if (top->count == 0) {
-        return false;
-      } else {
+    } else if (c == ')' || c == '}' || c == ']') { // close
+      if (top->count == 0) return false; // got close, but nothing opened
+      else {
         char top_char = pop(top);
-        if (c == ')' && top_char != '(') {
-          return false;
-        } else if (c == '}' && top_char != '{') {
-          return false;
-        } else if (c == ']' && top_char != '[') {
-          return false;
-        }
+        if (c == ')' && top_char != '(' || c == '}' && top_char != '{' || c == ']' && top_char != '[') return false;
+        // return false if the close does not match the most recent open
       }
     }
   }
