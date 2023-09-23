@@ -212,7 +212,7 @@ void push(char exp, Top* top){
 bool MatchingParentheses(string ari_exp) { 
   Top *top = new Top;
   top->count = 0;
-  top->head = NULL;
+  top->head = nullptr;
   for (char c : ari_exp) {
     if (c == '(' || c == '{' || c == '[') { // open
       push(c, top);
@@ -291,14 +291,14 @@ void task_5(ofstream &fout, InstructionSequence *instr_seq) {
         } else if (command.compare("d") == 0) {
           if (size == 0) {
             answer = "error";
-            break; // FIRE: Check if this is correct
+            break;
           }
           while (queue[head++] != ' ');
           size--;
         } else if (command.compare("show") == 0) {
           if (size == 0) {
             answer += "empty";
-            break; // FIRE: Check if this is correct
+            break;
           }
           int start_ = head;
           int count = 0;
