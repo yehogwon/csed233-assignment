@@ -209,16 +209,23 @@ void push(char exp, Top* top){
   top->count++;
 }
 
+void delete_top(Top *top) {
+  while (top->count > 0) pop(top);
+  delete top;
+}
+
 bool MatchingParentheses(string ari_exp) { 
   Top *top = new Top;
   top->count = 0;
-  top->head = NULL;
+  top->head = nullptr;
   for (char c : ari_exp) {
     if (c == '(' || c == '{' || c == '[') { // open
       push(c, top);
     } else if (c == ')' || c == '}' || c == ']') { // close
-      if (top->count == 0) return false; // got close, but nothing opened
-      else {
+      if (top->count == 0) { // got close, but nothing opened
+        delete_top(top);
+        return false;
+      } else {
         char top_char = pop(top);
         if (c == ')' && top_char != '(' || c == '}' && top_char != '{' || c == ']' && top_char != '[') return false;
         // return false if the close does not match the most recent open
@@ -226,14 +233,9 @@ bool MatchingParentheses(string ari_exp) {
     }
   }
 
-  if (top->count == 0) {
-    delete top;
-    return true;
-  } else {
-    while (top->count > 0) pop(top);
-    delete top;
-    return false;
-  }
+  bool ret = top->count == 0;
+  delete_top(top);
+  return ret;
 }
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
@@ -291,20 +293,20 @@ void task_5(ofstream &fout, InstructionSequence *instr_seq) {
         } else if (command.compare("d") == 0) {
           if (size == 0) {
             answer = "error";
-            break; // FIRE: Check if this is correct
+            break;
           }
           while (queue[head++] != ' ');
           size--;
         } else if (command.compare("show") == 0) {
           if (size == 0) {
             answer += "empty";
-            break; // FIRE: Check if this is correct
+            break;
           }
           int start_ = head;
           int count = 0;
           while (true) {
-            answer += queue[head++];
-            if (queue[head] == ' ' && ++count >= size) break;
+            answer += queue[start_++];
+            if (queue[start_] == ' ' && ++count >= size) break;
           }
           answer += " ";
         } else if (command.compare("size") == 0) {
