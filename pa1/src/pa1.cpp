@@ -192,15 +192,17 @@ struct Top {
 /////////////////////////////////////////////////////////
 //////////  TODO: Implement From Here      //////////////
 char pop(Top* top){
-  char val = top->head->value;
-  top->head = top->head->next;
-  top->count--;
-  return val;
+    char val = top->head->value;
+    stack *tmp = top->head;
+    top->head = top->head->next;
+    delete tmp;
+    top->count--;
+    return val;
 }
 
 
 void push(char exp, Top* top){
-  stack* new_node = new stack;
+  stack *new_node = new stack;
   new_node->value = exp;
   new_node->next = top->head;
   top->head = new_node;
@@ -209,6 +211,8 @@ void push(char exp, Top* top){
 
 bool MatchingParentheses(string ari_exp) { 
   Top *top = new Top;
+  top->count = 0;
+  top->head = NULL;
   for (char c : ari_exp) {
     if (c == '(' || c == '{' || c == '[') { // open
       push(c, top);
@@ -221,7 +225,15 @@ bool MatchingParentheses(string ari_exp) {
       }
     }
   }
-  return top->count == 0;
+
+  if (top->count == 0) {
+    delete top;
+    return true;
+  } else {
+    while (top->count > 0) pop(top);
+    delete top;
+    return false;
+  }
 }
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
