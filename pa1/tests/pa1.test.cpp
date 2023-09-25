@@ -11,7 +11,7 @@
 #include <map>
 
 #define CREATE_FILE_STREAMS \
-    std::string temp_file = "/tmp/pa1.test." + random_string(10); \
+    std::string temp_file = "/tmp/pa1.test." + random_string(10) + time_stamp(); \
     std::ofstream temp_out(temp_file); \
     std::ifstream temp_in(temp_file);
 
@@ -32,6 +32,13 @@ using function_1_args = void (*)(std::ofstream&, T);
 
 const char *SYMBOLS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const int SYMBOLS_LEN = 62;
+
+std::string time_stamp() {
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    std::string ts = std::to_string(ltm->tm_year + 1900) + std::to_string(ltm->tm_mon + 1) + std::to_string(ltm->tm_mday) + std::to_string(ltm->tm_hour) + std::to_string(ltm->tm_min) + std::to_string(ltm->tm_sec);
+    return ts;
+}
 
 std::string random_string(const int len) {
     std::string rstr;
