@@ -300,7 +300,6 @@ void task_5(ofstream &fout, InstructionSequence *instr_seq) {
         } else if (command.compare("show") == 0) {
           if (size == 0) {
             answer += "empty";
-            break;
           }
           int start_ = head;
           int count = 0;
