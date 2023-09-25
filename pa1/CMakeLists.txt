@@ -16,7 +16,7 @@ function(pa1_test test_name)
     add_test(
         NAME PA1::${test_name}
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/build/tests/pa1.test.out ${test_name}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endfunction(pa1_test)
 
