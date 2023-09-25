@@ -300,12 +300,13 @@ void task_5(ofstream &fout, InstructionSequence *instr_seq) {
         } else if (command.compare("show") == 0) {
           if (size == 0) {
             answer += "empty";
-          }
-          int start_ = head;
-          int count = 0;
-          while (true) {
-            answer += queue[start_++];
-            if (queue[start_] == ' ' && ++count >= size) break;
+          } else {
+            int start_ = head;
+            int count = 0;
+            while (true) {
+              answer += queue[start_++];
+              if (queue[start_] == ' ' && ++count >= size) break;
+            }
           }
           answer += " ";
         } else if (command.compare("size") == 0) {
