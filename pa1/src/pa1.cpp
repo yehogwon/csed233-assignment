@@ -381,6 +381,7 @@ void task_6(ofstream &fout, InstructionSequence *instr_seq) {
           /* TODO: Implement */
           if (cnt == 0) answer = "empty";
           else {
+            answer = "";
             for (int i = front; i < front + cnt; i++)
               answer += std::to_string(arr[i % queue_size]) + " ";
           }
