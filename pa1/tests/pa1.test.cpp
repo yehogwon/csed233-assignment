@@ -168,7 +168,10 @@ int main(int argc, char **argv) {
 
         while (std::getline(answer_in, input)) {
             answer = "";
-            while (std::getline(answer_in, tmp) && tmp != CASE_SEP) answer += prefix + tmp;
+            while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
+                strip(tmp);
+                answer += prefix + tmp;
+            }
             strip(input);
             std::pair<InstructionSequence*, std::string> test_case = {
                 ParseInstructions(input.c_str()), 
