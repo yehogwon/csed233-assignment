@@ -33,7 +33,7 @@ using function_1_args = void (*)(std::ofstream&, T);
 const char *SYMBOLS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const int SYMBOLS_LEN = 62;
 
-const char *CASE_SEP = "**** ****"; // TODO: what about add sep for all tasks
+const char *CASE_SEP = "**** ****";
 
 std::string time_stamp() {
     time_t now = time(0);
@@ -128,15 +128,21 @@ int main(int argc, char **argv) {
         
         answer = prefix + answer;
         return !test_no_args(no_args_functions[test_name], answer);
-    } else if (test_name == "Task3" || test_name == "Task5") {
+    } else if (test_name == "Task3" || test_name == "Task5" || test_name == "Task6") {
         std::ifstream answer_in(answer_path);
-        std::string input, answer;
+        std::string input, answer, tmp;
 
-        while (std::getline(answer_in, input) && std::getline(answer_in, answer)) {
+        while (std::getline(answer_in, input)) {
+            answer = "";
+            while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
+                strip(tmp);
+                answer += prefix + tmp;
+            }
+            if (test_name == "Task6" && answer == prefix) answer = ""; // If the answer is the empty string, Task 6 does not print anything. 
             strip(input);
             std::pair<InstructionSequence*, std::string> test_case = {
                 ParseInstructions(input.c_str()), 
-                prefix + answer
+                answer
             };
             std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
             if (!test_1_args<InstructionSequence*>(one_args_functions[test_name], test_case)) {
@@ -147,23 +153,6 @@ int main(int argc, char **argv) {
         return 0;
     } else if (test_name == "Task4") {
         std::ifstream answer_in(answer_path);
-        std::string input, answer;
-
-        while (std::getline(answer_in, input) && std::getline(answer_in, answer)) {
-            strip(input);
-            std::pair<std::string, std::string> test_case = {
-                input,
-                prefix + answer
-            };
-            std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
-            if (!test_1_args<std::string>(one_args_functions_str[test_name], test_case)) {
-                std::cout << "Failed..." << std::endl;
-                return 1;
-            }
-        }
-        return 0;
-    } else if (test_name == "Task6") {
-        std::ifstream answer_in(answer_path);
         std::string input, answer, tmp;
 
         while (std::getline(answer_in, input)) {
@@ -172,14 +161,13 @@ int main(int argc, char **argv) {
                 strip(tmp);
                 answer += prefix + tmp;
             }
-            if (answer == prefix) answer = "";
             strip(input);
-            std::pair<InstructionSequence*, std::string> test_case = {
-                ParseInstructions(input.c_str()), 
+            std::pair<std::string, std::string> test_case = {
+                input, 
                 answer
             };
             std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
-            if (!test_1_args<InstructionSequence*>(one_args_functions[test_name], test_case)) {
+            if (!test_1_args<std::string>(one_args_functions_str[test_name], test_case)) {
                 std::cout << "Failed..." << std::endl;
                 return 1;
             }
