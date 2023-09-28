@@ -363,11 +363,15 @@ void task_6(ofstream &fout, InstructionSequence *instr_seq) {
         string command = instr_seq->instructions[i].command;
         if (command.compare("e") == 0) {
             /* TODO: Implement */
-            
+            if (cnt == queue_size) continue;
+            arr[rear] = instr_seq->instructions[i].value;
+            rear = (rear + 1) % queue_size;
+            cnt++;
         } else if (command.compare("d") == 0) {
             /* TODO: Implement */
-           
-
+            if (cnt == 0) continue;
+            front++;
+            cnt--;
         } else if (command.compare("size") == 0) {
 
           fout << "[Task 6]" << endl;
@@ -375,7 +379,12 @@ void task_6(ofstream &fout, InstructionSequence *instr_seq) {
 
         } else if (command.compare("show")==0){
           /* TODO: Implement */
-            
+          if (cnt == 0) answer = "empty";
+          else {
+            answer = "";
+            for (int i = front; i < front + cnt; i++)
+              answer += std::to_string(arr[i % queue_size]) + " ";
+          }
           fout << "[Task 6]" << endl;
           fout << answer << endl;
         }

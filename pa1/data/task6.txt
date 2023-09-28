@@ -1,6 +1,6 @@
 [('e', 5), ('e', 3), ('d', NULL), ('show', NULL)]
 3
-[('e', 5), ('e', 3), ('d', NULL), ('e', 6), ('num', NULL)]
+[('e', 5), ('e', 3), ('d', NULL), ('e', 6), ('size', NULL)]
 2
 [('e', 3), ('d', NULL), ('show', NULL)]
 empty
