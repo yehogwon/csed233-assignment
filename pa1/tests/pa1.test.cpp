@@ -17,7 +17,7 @@
 
 #define GET_FILE_STREAM_CONTENT(x) \
     std::string x = "", line; \
-    while (std::getline(temp_in, line)) x += line; \
+    while (std::getline(temp_in, line)) { strip(line); x += line; } \
     strip(x);
 
 #define CLOSE_FILE_STREAMS \
@@ -172,6 +172,7 @@ int main(int argc, char **argv) {
                 strip(tmp);
                 answer += prefix + tmp;
             }
+            if (answer == prefix) answer = "";
             strip(input);
             std::pair<InstructionSequence*, std::string> test_case = {
                 ParseInstructions(input.c_str()), 
