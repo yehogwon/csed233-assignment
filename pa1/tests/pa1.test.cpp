@@ -17,7 +17,7 @@
 
 #define GET_FILE_STREAM_CONTENT(x) \
     std::string x = "", line; \
-    while (std::getline(temp_in, line)) x += line; \
+    while (std::getline(temp_in, line)) { strip(line); x += line; } \
     strip(x);
 
 #define CLOSE_FILE_STREAMS \
@@ -32,6 +32,8 @@ using function_1_args = void (*)(std::ofstream&, T);
 
 const char *SYMBOLS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const int SYMBOLS_LEN = 62;
+
+const char *CASE_SEP = "**** ****"; // TODO: what about add sep for all tasks
 
 std::string time_stamp() {
     time_t now = time(0);
@@ -126,7 +128,7 @@ int main(int argc, char **argv) {
         
         answer = prefix + answer;
         return !test_no_args(no_args_functions[test_name], answer);
-    } else if (test_name == "Task3" || test_name == "Task5" || test_name == "Task6") {
+    } else if (test_name == "Task3" || test_name == "Task5") {
         std::ifstream answer_in(answer_path);
         std::string input, answer;
 
@@ -155,6 +157,29 @@ int main(int argc, char **argv) {
             };
             std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
             if (!test_1_args<std::string>(one_args_functions_str[test_name], test_case)) {
+                std::cout << "Failed..." << std::endl;
+                return 1;
+            }
+        }
+        return 0;
+    } else if (test_name == "Task6") {
+        std::ifstream answer_in(answer_path);
+        std::string input, answer, tmp;
+
+        while (std::getline(answer_in, input)) {
+            answer = "";
+            while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
+                strip(tmp);
+                answer += prefix + tmp;
+            }
+            if (answer == prefix) answer = "";
+            strip(input);
+            std::pair<InstructionSequence*, std::string> test_case = {
+                ParseInstructions(input.c_str()), 
+                answer
+            };
+            std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
+            if (!test_1_args<InstructionSequence*>(one_args_functions[test_name], test_case)) {
                 std::cout << "Failed..." << std::endl;
                 return 1;
             }
