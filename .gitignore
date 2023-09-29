@@ -220,3 +220,6 @@ replit.nix
 
 .DS_Store
 build
+
+submit/*
+!submit/submit.sh
