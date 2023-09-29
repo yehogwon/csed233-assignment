@@ -395,7 +395,7 @@ void task_6(ofstream &fout, InstructionSequence *instr_seq) {
         }
     }
 }
-#ifndef DOING_CTEST // FIRE: CLEAR THIS LINE (DO NOE REMOVE THIS LINE THOUGH)
+#ifndef DOING_CTEST // SUBMIT: CLEAR THIS LINE (DO NOE REMOVE THIS LINE THOUGH)
 int main(int argc, char **argv) {
   string filename = "submit.txt";
   int task_num = 0;
@@ -474,4 +474,4 @@ int main(int argc, char **argv) {
   fout.close();
   return 0;
 }
-#endif // FIRE: CLEAR THIS LINE (DO NOE REMOVE THIS LINE THOUGH)
+#endif // SUBMIT: CLEAR THIS LINE (DO NOE REMOVE THIS LINE THOUGH)
