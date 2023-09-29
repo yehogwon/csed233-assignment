@@ -140,6 +140,7 @@ void task_3(ofstream &fout, InstructionSequence *instr_seq) {
       length--;
     } else {
       cerr << "Invalid command" << endl;
+      delete[] arr;
       exit(-1);
     }
   }
