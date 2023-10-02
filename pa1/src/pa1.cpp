@@ -219,22 +219,27 @@ bool MatchingParentheses(string ari_exp) {
   Top *top = new Top;
   top->count = 0;
   top->head = nullptr;
+
+  bool ret = true;
   for (char c : ari_exp) {
     if (c == '(' || c == '{' || c == '[') { // open
       push(c, top);
     } else if (c == ')' || c == '}' || c == ']') { // close
       if (top->count == 0) { // got close, but nothing opened
-        delete_top(top);
-        return false;
+        ret = false;
+        break;
       } else {
         char top_char = pop(top);
-        if (c == ')' && top_char != '(' || c == '}' && top_char != '{' || c == ']' && top_char != '[') return false;
         // return false if the close does not match the most recent open
+        if (c == ')' && top_char != '(' || c == '}' && top_char != '{' || c == ']' && top_char != '[') {
+          ret = false;
+          break;
+        }
       }
     }
   }
 
-  bool ret = top->count == 0;
+  ret = ret && (top->count == 0);
   delete_top(top);
   return ret;
 }
@@ -371,7 +376,7 @@ void task_6(ofstream &fout, InstructionSequence *instr_seq) {
         } else if (command.compare("d") == 0) {
             /* TODO: Implement */
             if (cnt == 0) continue;
-            front++;
+            front = (front + 1) % queue_size;
             cnt--;
         } else if (command.compare("size") == 0) {
 
