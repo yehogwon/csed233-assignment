@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# NOTE: Adapt to PA2; it has more than one submission files. 
 BASEDIR=$(dirname "$0") # path to the directory of this script
 
 # declare a function that prints a message
