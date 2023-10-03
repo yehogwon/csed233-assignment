@@ -56,6 +56,7 @@ do
     for file_path in "${pa_file_relative_paths[@]}"
     do
         file_name=$(basename $file_path)
+        # NOTE: REMOVE SUBMIT NOTE, RATHER THAN CLEAR
         sed 's,.*//[ ]SUBMIT:.*,,g' "$pa_dir_path/$file_path" > "$pa_submission_dir_path/$file_name"
     done
 
