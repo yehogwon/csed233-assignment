@@ -1,7 +1,6 @@
 add_executable(
     pa1.out
     pa1.cpp
-    utils.cpp
 )
 
 add_library(
@@ -9,7 +8,12 @@ add_library(
     utils.cpp
 )
 
+target_link_libraries(
+    pa1.out
+    pa1.lib
+)
+
 add_executable(
-    evaluate.out
+    pa1.evaluate.out
     evaluate.cpp
 )
