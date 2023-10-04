@@ -55,7 +55,16 @@ int main(int argc, char **argv) {
     } else if (test_name == "Task4") {
         // NOTE: Implement automatic test for Task4
     } else if (test_name == "Task5" || test_name == "Task6") {
-        // NOTE: Implement automatic test for Task5 and Task6
+        InstructionSequence instruction_sequence;
+        return test_iteration_1_args<InstructionSequence&>(
+            one_args_functions_insts[test_name], 
+            prefix, 
+            answer_in, 
+            [&instruction_sequence](const std::string &s) -> InstructionSequence& {
+                instruction_sequence.parseInstructions(s.c_str());
+                return instruction_sequence;
+            }
+        );
     } else {
         std::cout << "Invalid test name" << std::endl;
         return -2; // invalid test name
