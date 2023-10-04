@@ -1,109 +1,23 @@
-#define DOING_CTEST
+#include "test.h"
 #include "pa1.cpp"
 
 #include <iostream>
 #include <vector>
 #include <string>
 #include <algorithm>
-#include <cstdio>
 #include <fstream>
-#include <unistd.h>
 #include <map>
 
-#define CREATE_FILE_STREAMS \
-    std::string temp_file = "/tmp/pa1.test." + random_string(10) + time_stamp(); \
-    std::ofstream temp_out(temp_file); \
-    std::ifstream temp_in(temp_file);
-
-#define GET_FILE_STREAM_CONTENT(x) \
-    std::string x = "", line; \
-    while (std::getline(temp_in, line)) { strip(line); x += line; } \
-    strip(x);
-
-#define CLOSE_FILE_STREAMS \
-    temp_out.close(); \
-    temp_in.close(); \
-    std::remove(temp_file.c_str());
-
-using function_no_args = void (*)(std::ofstream&);
-
-template <typename T>
-using function_1_args = void (*)(std::ofstream&, T);
-
-const char *SYMBOLS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const int SYMBOLS_LEN = 62;
-
-const char *CASE_SEP = "**** ****";
-
-std::string time_stamp() {
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-    std::string ts = std::to_string(ltm->tm_year + 1900) + std::to_string(ltm->tm_mon + 1) + std::to_string(ltm->tm_mday) + std::to_string(ltm->tm_hour) + std::to_string(ltm->tm_min) + std::to_string(ltm->tm_sec);
-    return ts;
-}
-
-std::string random_string(const int len) {
-    std::string rstr;
-    rstr.reserve(len);
-    for (int i = 0; i < len; i++) rstr += SYMBOLS[std::rand() % SYMBOLS_LEN];
-    return rstr;
-}
-
-inline void lstrip(std::string &s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
-        return !std::isspace(ch) && ch != '\n';
-    }));
-}
-
-
-inline void rstrip(std::string &s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
-        return !std::isspace(ch);
-    }).base(), s.end());
-}
-
-inline void strip(std::string &s) {
-    lstrip(s);
-    rstrip(s);
-}
-
-bool test_no_args(function_no_args fn, const std::string &expected_output) {
-    CREATE_FILE_STREAMS
-    fn(temp_out);
-    GET_FILE_STREAM_CONTENT(full_content)
-    CLOSE_FILE_STREAMS
-    std::cout << "GOT: " << full_content << std::endl;
-    return full_content == expected_output;
-}
-
-template <typename T>
-bool test_1_args(function_1_args<T> fn, const std::pair<T, std::string> &test_case) {
-    CREATE_FILE_STREAMS
-    fn(temp_out, test_case.first);
-    GET_FILE_STREAM_CONTENT(full_content)
-    CLOSE_FILE_STREAMS
-    std::cout << "GOT: " << full_content << std::endl;
-    return full_content == test_case.second;
-}
+#define PA_ID 1
 
 int main(int argc, char **argv) {
-    if (!(argc == 2 || argc == 3)) { // invalid arguments (requires test name)
-        std::cout << "Invalid arguments" << std::endl;
-        std::cout << "Usage: ./pa1.test.out <test_name>" << std::endl;
-        std::cout << "Or" << std::endl;
-        std::cout << "Usage: ./pa1.test.out <test_name> <answer_dir_path>" << std::endl;
-        return -1;
-    }
+    std::vector<std::string> &&init_info = init_test(PA_ID, argc, argv);
+    if (init_info.size() == 0) return -1;
 
-    srand(time(NULL) * getpid());
-    std::string test_name = argv[1];
-    std::string test_name_lower = test_name;
-    std::transform(test_name_lower.begin(), test_name_lower.end(), test_name_lower.begin(), ::tolower);
-    std::string prefix = "[" + test_name + "]";
-    prefix.insert(5, " ");
-
-    std::string data_path = argc == 2 ? "data/" : std::string(argv[2]);
-    std::string answer_path = data_path + test_name_lower + ".txt";
+    std::string test_name, prefix, answer_path;
+    test_name = init_info[0];
+    prefix = init_info[1];
+    answer_path = init_info[2];
 
     std::map<std::string, function_no_args> no_args_functions = {
         {"Task1", task_1},
@@ -122,57 +36,31 @@ int main(int argc, char **argv) {
     
     if (test_name == "Task1" || test_name == "Task2") {
         std::ifstream answer_in(answer_path);
-        std::string answer;
-        std::getline(answer_in, answer);
-        answer_in.close();
-        
-        answer = prefix + answer;
-        return !test_no_args(no_args_functions[test_name], answer);
+        return test_iteration_0_args(
+            no_args_functions[test_name], 
+            prefix, 
+            answer_in
+        );
     } else if (test_name == "Task3" || test_name == "Task5" || test_name == "Task6") {
         std::ifstream answer_in(answer_path);
-        std::string input, answer, tmp;
-
-        while (std::getline(answer_in, input)) {
-            answer = "";
-            while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
-                strip(tmp);
-                answer += prefix + tmp;
-            }
-            if (test_name == "Task6" && answer == prefix) answer = ""; // If the answer is the empty string, Task 6 does not print anything. 
-            strip(input);
-            std::pair<InstructionSequence*, std::string> test_case = {
-                ParseInstructions(input.c_str()), 
-                answer
-            };
-            std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
-            if (!test_1_args<InstructionSequence*>(one_args_functions[test_name], test_case)) {
-                std::cout << "Failed..." << std::endl;
-                return 1;
-            }
-        }
-        return 0;
+        return test_iteration_1_args<InstructionSequence*>(
+            one_args_functions[test_name], 
+            prefix, 
+            answer_in, 
+            [](const std::string &str) -> InstructionSequence* {
+                return ParseInstructions(str.c_str());
+            }, 
+            test_name == "Task6"
+        );
     } else if (test_name == "Task4") {
         std::ifstream answer_in(answer_path);
-        std::string input, answer, tmp;
-
-        while (std::getline(answer_in, input)) {
-            answer = "";
-            while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
-                strip(tmp);
-                answer += prefix + tmp;
-            }
-            strip(input);
-            std::pair<std::string, std::string> test_case = {
-                input, 
-                answer
-            };
-            std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
-            if (!test_1_args<std::string>(one_args_functions_str[test_name], test_case)) {
-                std::cout << "Failed..." << std::endl;
-                return 1;
-            }
-        }
-        return 0;
+        return test_iteration_1_args<std::string>(
+            one_args_functions_str[test_name], 
+            prefix, 
+            answer_in, 
+            identity_string, 
+            false
+        );
     } else {
         std::cout << "Invalid test name" << std::endl;
         return -2; // invalid test name
