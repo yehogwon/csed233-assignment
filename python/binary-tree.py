@@ -73,5 +73,3 @@ def _stringify_binary_tree(root: BinaryNode, mode: str) -> str:
 
 def stringify_binary_tree(root: BinaryNode, mode: str) -> str: 
     return ' '.join(_stringify_binary_tree(root, mode).strip().split())
-
-print(stringify_binary_tree(construct_from_string('4(2(3)(1))(6(5))'), 'levelorder'))
