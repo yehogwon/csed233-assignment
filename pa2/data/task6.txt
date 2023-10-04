@@ -1,0 +1,12 @@
+[('removeMax', 0), ('insert', 3)]
+Empty 3
+**** ****
+[('insert', 5), ('insert', -3), ('insert', 2), ('removeMax', 0)]
+2 -3
+**** ****
+[('insert', 28), ( 'insert', 9), ( 'insert', 27), ('insert', 10), ( 'insert', 3), ( 'insert', 45), ('removeMax', NULL), ( 'insert', 22)]
+28 10 27 9 3 22
+**** ****
+[('insert', 3), ('removeMax', 0), ('isEmpty', 0)]
+True
+**** ****
