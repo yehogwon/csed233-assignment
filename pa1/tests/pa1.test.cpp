@@ -5,28 +5,19 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-#include <cstdio>
 #include <fstream>
 #include <map>
 
+#define PA_ID 1
+
 int main(int argc, char **argv) {
-    if (!(argc == 2 || argc == 3)) { // invalid arguments (requires test name)
-        std::cout << "Invalid arguments" << std::endl;
-        std::cout << "Usage: ./pa1.test.out <test_name>" << std::endl;
-        std::cout << "Or" << std::endl;
-        std::cout << "Usage: ./pa1.test.out <test_name> <answer_dir_path>" << std::endl;
-        return -1;
-    }
+    std::vector<std::string> &&init_info = init_test(PA_ID, argc, argv);
+    if (init_info.size() == 0) return -1;
 
-    srand(time(NULL) * getpid());
-    std::string test_name = argv[1];
-    std::string test_name_lower = test_name;
-    std::transform(test_name_lower.begin(), test_name_lower.end(), test_name_lower.begin(), ::tolower);
-    std::string prefix = "[" + test_name + "]";
-    prefix.insert(5, " ");
-
-    std::string data_path = argc == 2 ? "data/" : std::string(argv[2]);
-    std::string answer_path = data_path + test_name_lower + ".txt";
+    std::string test_name, prefix, answer_path;
+    test_name = init_info[0];
+    prefix = init_info[1];
+    answer_path = init_info[2];
 
     std::map<std::string, function_no_args> no_args_functions = {
         {"Task1", task_1},

@@ -41,6 +41,31 @@ const int SYMBOLS_LEN = 62;
 
 const char *CASE_SEP = "**** ****";
 
+std::vector<std::string> init_test(int pa_id, int argc, char **argv) {
+    // If successful, returns {test_name, prefix, answer_path}
+    if (!(argc == 2 || argc == 3)) { // invalid arguments (requires test name)
+        std::cout << "Invalid arguments" << std::endl;
+        std::cout << "Usage: ./pa" << pa_id << ".test.out <test_name>" << std::endl;
+        std::cout << "Or" << std::endl;
+        std::cout << "Usage: ./pa" << pa_id << ".test.out <test_name> <answer_dir_path>" << std::endl;
+        return {};
+    }
+    
+    srand(time(NULL) * getpid());
+
+    std::string test_name = argv[1];
+    std::string test_name_lower = test_name;
+    std::transform(test_name_lower.begin(), test_name_lower.end(), test_name_lower.begin(), ::tolower);
+    std::string prefix = "[" + test_name + "]";
+    prefix.insert(5, " ");
+
+    std::string data_path = argc == 2 ? "data/" : std::string(argv[2]);
+    std::string answer_path = data_path + test_name_lower + ".txt";
+    
+    // NOTE: check if anwer_path file exists
+    return {test_name, prefix, answer_path};
+}
+
 std::string time_stamp() {
     time_t now = time(0);
     tm *ltm = localtime(&now);
