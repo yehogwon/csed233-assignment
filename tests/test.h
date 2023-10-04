@@ -155,7 +155,7 @@ int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix
             strip(tmp);
             answer += prefix + tmp;
         }
-        if (nothing_for_empty && answer == prefix) answer = ""; // If the answer is the empty string, Task 6 does not print anything. 
+        if (nothing_for_empty && answer == prefix) answer = ""; // `nothing_for_empty` is True when the task does not print even [Task #] when that is the only line to print. 
         strip(input);
         std::pair<T, std::string> test_case = {
             parse_input(input),
