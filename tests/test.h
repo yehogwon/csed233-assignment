@@ -3,6 +3,7 @@
 #define DOING_CTEST
 
 #include <iostream>
+#include <vector>
 #include <string>
 #include <algorithm>
 #include <cstdio>
