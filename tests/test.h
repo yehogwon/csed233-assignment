@@ -170,4 +170,31 @@ int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix
     return 0;
 }
 
+template <typename T, typename U>
+int test_iteration_2_args(const function_2_args<T, U> fn, const std::string &prefix, std::ifstream &answer_in, const function_parse_input<T> parse_input1, const function_parse_input<U> parse_input2, const bool nothing_for_empty=false) {
+    std::string input1, input2, answer, tmp;
+    while (std::getline(answer_in, input1) && std::getline(answer_in, input2)) {
+        answer = "";
+        while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
+            strip(tmp);
+            answer += prefix + tmp;
+        }
+        if (nothing_for_empty && answer == prefix) answer = ""; // If the answer is the empty string, Task 6 does not print anything. 
+        strip(input1); strip(input2);
+        std::pair<std::pair<T, U>, std::string> test_case = {
+            {
+                parse_input1(input1), 
+                parse_input2(input2)
+            },
+            answer
+        };
+        std::cout << "Testing: {" << input1 << "," << input2 << "} -> " << test_case.second << std::endl;
+        if (!test_2_args<T, U>(fn, test_case)) {
+            std::cout << "Failed..." << std::endl;
+            return 1;
+        }
+    }
+    return 0;
+}
+
 #endif // __TEST_H__
