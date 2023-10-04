@@ -45,57 +45,31 @@ int main(int argc, char **argv) {
     
     if (test_name == "Task1" || test_name == "Task2") {
         std::ifstream answer_in(answer_path);
-        std::string answer;
-        std::getline(answer_in, answer);
-        answer_in.close();
-        
-        answer = prefix + answer;
-        return !test_no_args(no_args_functions[test_name], answer);
+        return test_iteration_0_args(
+            no_args_functions[test_name], 
+            prefix, 
+            answer_in
+        );
     } else if (test_name == "Task3" || test_name == "Task5" || test_name == "Task6") {
         std::ifstream answer_in(answer_path);
-        std::string input, answer, tmp;
-
-        while (std::getline(answer_in, input)) {
-            answer = "";
-            while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
-                strip(tmp);
-                answer += prefix + tmp;
-            }
-            if (test_name == "Task6" && answer == prefix) answer = ""; // If the answer is the empty string, Task 6 does not print anything. 
-            strip(input);
-            std::pair<InstructionSequence*, std::string> test_case = {
-                ParseInstructions(input.c_str()), 
-                answer
-            };
-            std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
-            if (!test_1_args<InstructionSequence*>(one_args_functions[test_name], test_case)) {
-                std::cout << "Failed..." << std::endl;
-                return 1;
-            }
-        }
-        return 0;
+        return test_iteration_1_args<InstructionSequence*>(
+            one_args_functions[test_name], 
+            prefix, 
+            answer_in, 
+            [](const std::string &str) -> InstructionSequence* {
+                return ParseInstructions(str.c_str());
+            }, 
+            test_name == "Task6"
+        );
     } else if (test_name == "Task4") {
         std::ifstream answer_in(answer_path);
-        std::string input, answer, tmp;
-
-        while (std::getline(answer_in, input)) {
-            answer = "";
-            while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
-                strip(tmp);
-                answer += prefix + tmp;
-            }
-            strip(input);
-            std::pair<std::string, std::string> test_case = {
-                input, 
-                answer
-            };
-            std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
-            if (!test_1_args<std::string>(one_args_functions_str[test_name], test_case)) {
-                std::cout << "Failed..." << std::endl;
-                return 1;
-            }
-        }
-        return 0;
+        return test_iteration_1_args<std::string>(
+            one_args_functions_str[test_name], 
+            prefix, 
+            answer_in, 
+            identity_string, 
+            false
+        );
     } else {
         std::cout << "Invalid test name" << std::endl;
         return -2; // invalid test name

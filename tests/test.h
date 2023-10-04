@@ -33,6 +33,9 @@ using function_1_args = void (*)(std::ofstream&, T);
 template <typename T, typename U>
 using function_2_args = void (*)(std::ofstream&, T, U);
 
+template <typename T>
+using function_parse_input = T (*)(const std::string&);
+
 const char *SYMBOLS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const int SYMBOLS_LEN = 62;
 
@@ -70,6 +73,10 @@ inline void strip(std::string &s) {
     rstrip(s);
 }
 
+std::string identity_string(const std::string &s) {
+    return s;
+}
+
 bool test_no_args(function_no_args fn, const std::string &expected_output) {
     CREATE_FILE_STREAMS
     fn(temp_out);
@@ -97,6 +104,38 @@ bool test_2_args(function_2_args<T, U> fn, const std::pair<std::pair<T, U>, std:
     CLOSE_FILE_STREAMS
     std::cout << "GOT: " << full_content << std::endl;
     return full_content == test_case.second;
+}
+
+int test_iteration_0_args(const function_no_args fn, const std::string &prefix, std::ifstream &answer_in) {
+    std::string answer;
+    std::getline(answer_in, answer);
+    answer_in.close();
+    answer = prefix + answer;
+    return !test_no_args(fn, answer);
+}
+
+template <typename T>
+int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix, std::ifstream &answer_in, const function_parse_input<T> parse_input, const bool nothing_for_empty=false) {
+    std::string input, answer, tmp;
+    while (std::getline(answer_in, input)) {
+        answer = "";
+        while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
+            strip(tmp);
+            answer += prefix + tmp;
+        }
+        if (nothing_for_empty && answer == prefix) answer = ""; // If the answer is the empty string, Task 6 does not print anything. 
+        strip(input);
+        std::pair<T, std::string> test_case = {
+            parse_input(input),
+            answer
+        };
+        std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
+        if (!test_1_args<T>(fn, test_case)) {
+            std::cout << "Failed..." << std::endl;
+            return 1;
+        }
+    }
+    return 0;
 }
 
 #endif // __TEST_H__
