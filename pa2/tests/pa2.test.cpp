@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <vector>
+#include <sstream>
+#include <cassert>
 #include <string>
 #include <fstream>
 #include <map>
@@ -53,7 +55,29 @@ int main(int argc, char **argv) {
             identity_cstr
         );
     } else if (test_name == "Task4") {
-        // NOTE: Implement automatic test for Task4
+        std::vector<char*> args;
+        const char *parsed_argv[3];
+        return test_iteration_1_args<const char**>(
+            one_args_functions_cstarr[test_name], 
+            prefix, 
+            answer_in, 
+            [&args, &parsed_argv](const std::string &s) -> const char** {
+                std::istringstream iss(s);
+                std::string token;
+                while(iss >> token) {
+                    char *arg = new char[token.size() + 1];
+                    copy(token.begin(), token.end(), arg);
+                    arg[token.size()] = '\0';
+                    args.push_back(arg);
+                }
+                assert(args.size() == 3 && "Invalid number of arguments");
+                parsed_argv[0] = args[0];
+                parsed_argv[1] = args[1];
+                parsed_argv[2] = args[2];
+                return parsed_argv;
+            }
+        );
+        for (char* arg : args) delete[] arg;
     } else if (test_name == "Task5" || test_name == "Task6") {
         InstructionSequence instruction_sequence;
         return test_iteration_1_args<InstructionSequence&>(
