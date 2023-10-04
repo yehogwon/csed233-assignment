@@ -61,8 +61,17 @@ def _stringify_binary_tree(root: BinaryNode, mode: str) -> str:
     elif mode == 'postorder':
         return f'{_stringify_binary_tree(root.left, mode)} {_stringify_binary_tree(root.right, mode)} {root.value}'
     elif mode == 'levelorder':
-        # NOTE: Implement level order traversal
-        raise NotImplementedError('Level order traversal is not implemented yet.')
+        queue: List[BinaryNode] = [root]
+        result = ''
+        while len(queue) > 0: 
+            node = queue.pop(0)
+            if node is not None: 
+                result += f'{node.value} '
+                queue.append(node.left)
+                queue.append(node.right)
+        return result
 
 def stringify_binary_tree(root: BinaryNode, mode: str) -> str: 
     return ' '.join(_stringify_binary_tree(root, mode).strip().split())
+
+print(stringify_binary_tree(construct_from_string('4(2(3)(1))(6(5))'), 'levelorder'))
