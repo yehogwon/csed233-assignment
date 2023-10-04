@@ -1,6 +1,7 @@
 include_directories(
     ${PA1_ROOT}/include
     ${PA1_ROOT}/src
+    ${PA_ROOT}/tests
 )
 
 add_executable(
