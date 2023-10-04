@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <fstream>
 #include <unistd.h>
+#include <functional>
 #include <map>
 
 #define CREATE_FILE_STREAMS \
@@ -28,13 +29,13 @@
 using function_no_args = void (*)(std::ofstream&);
 
 template <typename T>
-using function_1_args = void (*)(std::ofstream&, T);
+using function_1_args = std::function<void(std::ofstream&, T)>;
 
 template <typename T, typename U>
-using function_2_args = void (*)(std::ofstream&, T, U);
+using function_2_args = std::function<void(std::ofstream&, T, U)>;
 
 template <typename T>
-using function_parse_input = T (*)(const std::string&);
+using function_parse_input = std::function<T(const std::string&)>;
 
 const char *SYMBOLS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const int SYMBOLS_LEN = 62;
@@ -147,7 +148,7 @@ int test_iteration_0_args(const function_no_args fn, const std::string &prefix, 
 }
 
 template <typename T>
-int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix, std::ifstream &answer_in, const function_parse_input<T> parse_input, const bool nothing_for_empty=false) {
+int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix, std::ifstream &answer_in, function_parse_input<T> parse_input, const bool nothing_for_empty=false) {
     std::string input, answer, tmp;
     while (std::getline(answer_in, input)) {
         answer = "";
@@ -172,7 +173,7 @@ int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix
 
 // NOTE: Generalize this function to take any number of arguments. What about using variadic templates?
 template <typename T, typename U>
-int test_iteration_2_args(const function_2_args<T, U> fn, const std::string &prefix, std::ifstream &answer_in, const function_parse_input<T> parse_input1, const function_parse_input<U> parse_input2, const bool nothing_for_empty=false) {
+int test_iteration_2_args(const function_2_args<T, U> fn, const std::string &prefix, std::ifstream &answer_in, function_parse_input<T> parse_input1, function_parse_input<U> parse_input2, const bool nothing_for_empty=false) {
     std::string input1, input2, answer, tmp;
     while (std::getline(answer_in, input1) && std::getline(answer_in, input2)) {
         answer = "";

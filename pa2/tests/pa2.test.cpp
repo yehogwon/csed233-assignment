@@ -38,14 +38,14 @@ int main(int argc, char **argv) {
     };
     
     if (test_name == "Task1" || test_name == "Task2") {
-        return test_iteration_1_args(
+        return test_iteration_1_args<const char*>(
             one_args_functions_cstr[test_name], 
             prefix, 
             answer_in, 
             identity_cstr
         );
     } else if (test_name == "Task3") {
-        return test_iteration_2_args(
+        return test_iteration_2_args<const char*, const char*>(
             two_args_functions_cstrs[test_name],
             prefix,
             answer_in, 
