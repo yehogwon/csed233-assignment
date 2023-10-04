@@ -45,7 +45,13 @@ int main(int argc, char **argv) {
             identity_cstr
         );
     } else if (test_name == "Task3") {
-        // NOTE: Implement automatic test for Task3
+        return test_iteration_2_args(
+            two_args_functions_cstrs[test_name],
+            prefix,
+            answer_in, 
+            identity_cstr,
+            identity_cstr
+        );
     } else if (test_name == "Task4") {
         // NOTE: Implement automatic test for Task4
     } else if (test_name == "Task5" || test_name == "Task6") {
