@@ -170,6 +170,7 @@ int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix
     return 0;
 }
 
+// NOTE: Generalize this function to take any number of arguments. What about using variadic templates?
 template <typename T, typename U>
 int test_iteration_2_args(const function_2_args<T, U> fn, const std::string &prefix, std::ifstream &answer_in, const function_parse_input<T> parse_input1, const function_parse_input<U> parse_input2, const bool nothing_for_empty=false) {
     std::string input1, input2, answer, tmp;
