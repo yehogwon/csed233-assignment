@@ -105,6 +105,10 @@ std::string identity_string(const std::string &s) {
     return s;
 }
 
+const char* identity_cstr(const std::string &s) {
+    return s.c_str();
+}
+
 bool test_no_args(function_no_args fn, const std::string &expected_output) {
     CREATE_FILE_STREAMS
     fn(temp_out);
