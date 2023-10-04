@@ -62,7 +62,10 @@ std::vector<std::string> init_test(int pa_id, int argc, char **argv) {
     std::string data_path = argc == 2 ? "data/" : std::string(argv[2]);
     std::string answer_path = data_path + test_name_lower + ".txt";
     
-    // NOTE: check if anwer_path file exists
+    if (access(answer_path.c_str(), F_OK) == -1) {
+        std::cout << "Answer file does not exist" << std::endl;
+        return {};
+    }
     return {test_name, prefix, answer_path};
 }
 
