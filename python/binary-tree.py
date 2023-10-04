@@ -49,3 +49,20 @@ def construct_from_string(s: Optional[str]) -> BinaryNode:
         return None
     _value, _left_string, _right_string = _split_binary_tree_format(s)
     return BinaryNode(_value, construct_from_string(_left_string), construct_from_string(_right_string))
+
+def _stringify_binary_tree(root: BinaryNode, mode: str) -> str: 
+    assert mode in ['preorder', 'inorder', 'postorder', 'levelorder'], f'Invalid mode: {mode}'
+    if root is None: 
+        return ''
+    if mode == 'preorder':
+        return f'{root.value} {_stringify_binary_tree(root.left, mode)} {_stringify_binary_tree(root.right, mode)}'
+    elif mode == 'inorder':
+        return f'{_stringify_binary_tree(root.left, mode)} {root.value} {_stringify_binary_tree(root.right, mode)}'
+    elif mode == 'postorder':
+        return f'{_stringify_binary_tree(root.left, mode)} {_stringify_binary_tree(root.right, mode)} {root.value}'
+    elif mode == 'levelorder':
+        # NOTE: Implement level order traversal
+        raise NotImplementedError('Level order traversal is not implemented yet.')
+
+def stringify_binary_tree(root: BinaryNode, mode: str) -> str: 
+    return ' '.join(_stringify_binary_tree(root, mode).strip().split())
