@@ -13,3 +13,5 @@ target_link_libraries(
     pa1.test.out
     pa1.lib
 )
+
+target_compile_features(pa1.test.out PRIVATE cxx_std_17)

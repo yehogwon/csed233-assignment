@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <functional>
 #include <map>
+#include <tuple>
 
 #define CREATE_FILE_STREAMS \
     std::string temp_file = "/tmp/pa.test." + random_string(10) + time_stamp(); \
@@ -34,6 +35,9 @@ using function_1_args = std::function<void(std::ofstream&, T)>;
 
 template <typename T, typename U>
 using function_2_args = std::function<void(std::ofstream&, T, U)>;
+
+template <typename... Types>
+using function_args = std::function<void(std::ofstream&, Types...)>;
 
 template <typename T>
 using function_parse_input = std::function<T(const std::string&)>;
@@ -140,6 +144,16 @@ bool test_2_args(function_2_args<T, U> fn, const std::pair<std::pair<T, U>, std:
     return full_content == test_case.second;
 }
 
+template <typename T, typename... Types>
+bool test_args(function_args<T, Types...> fn, const std::pair<std::tuple<T, Types...>, std::string> &test_case) {
+    CREATE_FILE_STREAMS
+    std::apply([&fn, &temp_out](auto&&... args) { fn(temp_out, args...); }, test_case.first);
+    GET_FILE_STREAM_CONTENT(full_content)
+    CLOSE_FILE_STREAMS
+    std::cout << "GOT: " << full_content << std::endl;
+    return full_content == test_case.second;
+}
+
 int test_iteration_0_args(const function_no_args fn, const std::string &prefix, std::ifstream &answer_in) {
     std::string answer;
     std::getline(answer_in, answer);
@@ -172,7 +186,6 @@ int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix
     return 0;
 }
 
-// NOTE: Generalize this function to take any number of arguments. What about using variadic templates?
 template <typename T, typename U>
 int test_iteration_2_args(const function_2_args<T, U> fn, const std::string &prefix, std::ifstream &answer_in, function_parse_input<T> parse_input1, function_parse_input<U> parse_input2, const bool nothing_for_empty=false) {
     std::string input1, input2, answer, tmp;
@@ -193,6 +206,64 @@ int test_iteration_2_args(const function_2_args<T, U> fn, const std::string &pre
         };
         std::cout << "Testing: {" << input1 << "," << input2 << "} -> " << test_case.second << std::endl;
         if (!test_2_args<T, U>(fn, test_case)) {
+            std::cout << "Failed..." << std::endl;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int _getlines(std::ifstream &in, std::string *lines, int n_lines) {
+    std::string line;
+    for (int i = 0; i < n_lines; i++) {
+        if (!std::getline(in, line)) return i;
+        strip(line);
+        lines[i] = line;
+    }
+    return n_lines;
+}
+
+template <typename T, typename... Types>
+int test_iteration_args(
+        const function_args<T, Types...> fn, 
+        const std::string &prefix, std::ifstream &answer_in, 
+        function_parse_input<T> parse_input,
+        function_parse_input<Types>... parse_inputs,
+        const bool nothing_for_empty=false
+    ) {
+    constexpr int n_inputs = sizeof...(Types) + 1;
+    std::string inputs[n_inputs], answer, tmp;
+    std::tuple<T, Types...> parsed_inputs;
+    
+    while (_getlines(answer_in, inputs, n_inputs) == n_inputs) {
+        answer = "";
+        while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
+            strip(tmp);
+            answer += prefix + tmp;
+        }
+        if (nothing_for_empty && answer == prefix) answer = ""; // If the answer is the empty string, Task 6 does not print anything. 
+
+        int var_index = 1;
+        std::get<0>(parsed_inputs) = parse_input(inputs[var_index]);
+        ([&var_index, &inputs, &parsed_inputs, &parse_inputs]
+        {
+            var_index++;
+            std::get<var_index>(parsed_inputs) = parse_inputs[var_index](inputs[var_index]);
+        } (), ...);
+
+        std::pair<std::tuple<T, Types...>, std::string> test_case = {
+            parsed_inputs,
+            answer
+        };
+        
+        std::cout << "Testing: {";
+        for (int i = 0; i < n_inputs; i++) {
+            std::cout << inputs[i];
+            if (i < n_inputs - 1) std::cout << ",";
+        }
+        std::cout << "} -> " << test_case.second << std::endl;
+
+        if (!test_args<T, Types...>(fn, test_case)) {
             std::cout << "Failed..." << std::endl;
             return 1;
         }

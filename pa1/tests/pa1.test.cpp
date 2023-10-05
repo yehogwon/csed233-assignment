@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
         );
     } else if (test_name == "Task3" || test_name == "Task5" || test_name == "Task6") {
         std::ifstream answer_in(answer_path);
-        return test_iteration_1_args<InstructionSequence*>(
+        test_iteration_args<InstructionSequence*>(
             one_args_functions[test_name], 
             prefix, 
             answer_in, 
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
         );
     } else if (test_name == "Task4") {
         std::ifstream answer_in(answer_path);
-        return test_iteration_1_args<std::string>(
+        return test_iteration_args<std::string>(
             one_args_functions_str[test_name], 
             prefix, 
             answer_in, 
