@@ -22,7 +22,7 @@ endfunction(pa2_test)
 
 pa2_test(Task1)
 # pa2_test(Task2)
-# pa2_test(Task3)
+pa2_test(Task3)
 # pa2_test(Task4)
 # pa2_test(Task5)
 # pa2_test(Task6)

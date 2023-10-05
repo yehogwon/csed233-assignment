@@ -84,31 +84,61 @@ void BinaryTree::_currentLevel(string &list, Node *a, int level){
     /////////////////////////////////////////////////////////
 }
 
+void BinaryTree::_preOrder(std::string &list, Node *node) {
+    if (node == NULL) return;
+    list += node->value;
+    list += " ";
+    _preOrder(list, node->left);
+    _preOrder(list, node->right);
+}
+
 string BinaryTree::preOrder() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
-  return "";
+  std::string result;
+  _preOrder(result, _root);
+  return result;
 
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
+}
+
+void BinaryTree::_postOrder(std::string &list, Node *node) {
+    if (node == NULL) return;
+    _postOrder(list, node->left);
+    _postOrder(list, node->right);
+    list += node->value;
+    list += " ";
 }
 
 string BinaryTree::postOrder() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
-  return "";
+  std::string result;
+  _postOrder(result, _root);
+  return result;
 
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
+}
+
+void BinaryTree::_inOrder(std::string &list, Node *node) {
+    if (node == NULL) return;
+    _inOrder(list, node->left);
+    list += node->value;
+    list += " ";
+    _inOrder(list, node->right);
 }
 
 string BinaryTree::inOrder() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
-  return "";
+  std::string result;
+  _inOrder(result, _root);
+  return result;
 
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
