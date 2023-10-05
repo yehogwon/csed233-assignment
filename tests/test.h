@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <fstream>
+#include <sstream>
 #include <unistd.h>
 #include <functional>
 #include <map>
@@ -175,8 +176,12 @@ int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix
 // NOTE: Generalize this function to take any number of arguments. What about using variadic templates?
 template <typename T, typename U>
 int test_iteration_2_args(const function_2_args<T, U> fn, const std::string &prefix, std::ifstream &answer_in, function_parse_input<T> parse_input1, function_parse_input<U> parse_input2, const bool nothing_for_empty=false) {
-    std::string input1, input2, answer, tmp;
-    while (std::getline(answer_in, input1) && std::getline(answer_in, input2)) {
+    std::string input, input1, input2, answer, tmp;
+    while (std::getline(answer_in, input)) {
+        // split input with space and assign input1 and input2
+        std::istringstream iss(input);
+        iss >> input1 >> input2;
+
         answer = "";
         while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
             strip(tmp);
