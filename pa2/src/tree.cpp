@@ -70,7 +70,13 @@ string BinaryTree::levelOrder() {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
-    return "";
+    std::string result;
+    for (int i = 1; i <= _height(_root); i++) {
+        std::string cur;
+        _currentLevel(cur, _root, i);
+        result += cur;
+    }
+    return result;
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
@@ -80,8 +86,23 @@ void BinaryTree::_currentLevel(string &list, Node *a, int level){
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
+    if (a == NULL) return;
+    if (level == 1) {
+        list += a->value;
+        list += " ";
+    }
+    else if (level > 1) {
+        _currentLevel(list, a->left, level - 1);
+        _currentLevel(list, a->right, level - 1);
+    }
+
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
+}
+
+int BinaryTree::_height(Node *node) {
+    if (node == NULL) return 0;
+    return 1 + std::max(_height(node->left), _height(node->right));
 }
 
 void BinaryTree::_preOrder(std::string &list, Node *node) {

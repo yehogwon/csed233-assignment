@@ -33,6 +33,7 @@ private:
     void _currentLevel(string &list, Node *a, int level);
     void _general_tree(string &list, Node *a);
 
+    int _height(Node *node);
     void _preOrder(std::string &list, Node *node);
     void _postOrder(std::string &list, Node *node);
     void _inOrder(std::string &list, Node *node);
