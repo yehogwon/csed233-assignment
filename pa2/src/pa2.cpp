@@ -244,16 +244,23 @@ void task_5(ofstream &fout, InstructionSequence &instr_seq)
                 int input_value = instr_seq.getInstruction(i).getValue();
 
                 /* BEGIN_YOUR_CODE*/
+                if (!pq.insert(input_value, input_value)) {
+                    fout << "Error";
+                    return;
+                }
                 /* END_YOUR_CODE */
             }
             else if (command.compare("getMax") == 0)
             {
                 /* BEGIN_YOUR_CODE*/
+                if (pq.empty()) fout << "Empty" << " ";
+                else fout << pq.getMax().value << " ";
                 /* END_YOUR_CODE */
             }
             else if (command.compare("isEmpty") == 0)
             {
                 /* BEGIN_YOUR_CODE*/
+                fout << (pq.empty() ? "True" : "False") << " ";
                 /* END_YOUR_CODE */
             }
             else
@@ -299,16 +306,24 @@ void task_6(ofstream &fout, InstructionSequence &instr_seq)
                 int input_value = instr_seq.getInstruction(i).getValue();
 
                 /* BEGIN_YOUR_CODE*/
+                if (!pq.insert(input_value, input_value)) {
+                    fout << "Error"; // NOTE: Check if I need to check if pq is full
+                    return;
+                }
                 /* END_YOUR_CODE */
             }
             else if (command.compare("removeMax") == 0)
             {
                 /* BEGIN_YOUR_CODE*/
+                if (!pq.removeMax()) {
+                    fout << "Empty" << " ";
+                }
                 /* END_YOUR_CODE */
             }
             else if (command.compare("isEmpty") == 0)
             {
                 /* BEGIN_YOUR_CODE*/
+                fout << (pq.empty() ? "True" : "False") << " ";
                 /* END_YOUR_CODE */
             }
             else

@@ -56,11 +56,23 @@ void BinaryTree::buildFromString(const char *data) {
   _root = root;
 }
 
+void BinaryTree::general_preorder(std::string &list, Node *node) {
+    // NOTE: Check if this function really works as intended
+    if (node == NULL) return;
+    list += node == _root ? "" : "(";
+    list += node->value;
+    if (node->left) general_preorder(list, node->left);
+    list += node == _root ? "" : ")";
+    if (node->right) general_preorder(list, node->right);
+}
+
 string BinaryTree::general_tree(){
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
-   return "";
+    std::string result;
+    general_preorder(result, _root);
+    return result;
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
