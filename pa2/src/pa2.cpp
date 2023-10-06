@@ -245,7 +245,7 @@ void task_5(ofstream &fout, InstructionSequence &instr_seq)
 
                 /* BEGIN_YOUR_CODE*/
                 if (!pq.insert(input_value, input_value)) {
-                    fout << "Error" << endl;
+                    fout << "Error";
                     return;
                 }
                 /* END_YOUR_CODE */
@@ -253,14 +253,14 @@ void task_5(ofstream &fout, InstructionSequence &instr_seq)
             else if (command.compare("getMax") == 0)
             {
                 /* BEGIN_YOUR_CODE*/
-                if (pq.empty()) fout << "Empty" << " " << endl;
-                else fout << pq.getMax().value << " " << endl;
+                if (pq.empty()) fout << "Empty" << " ";
+                else fout << pq.getMax().value << " ";
                 /* END_YOUR_CODE */
             }
             else if (command.compare("isEmpty") == 0)
             {
                 /* BEGIN_YOUR_CODE*/
-                fout << (pq.empty() ? "True" : "False") << " " << endl;
+                fout << (pq.empty() ? "True" : "False") << " ";
                 /* END_YOUR_CODE */
             }
             else
