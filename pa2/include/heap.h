@@ -18,6 +18,7 @@ private:
     /* BEGIN_YOUR_CODE */
     int left(int i);
     int right(int i);
+    int higher_child(int i);
     bool is_leaf(int i);
     bool no_right_child(int i);
     int parent(int i);
