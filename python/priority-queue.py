@@ -6,17 +6,11 @@ CASE_SEP = '**** ****'
 MAX_SIZE = 100
 
 COMMANDS = ['insert', 'isEmpty', 'getMax']
-COMMANDS_WEIGHTS = [0.5, 0.2, 0.3]
 COMMANDS_RM = ['insert', 'isEmpty', 'removeMax']
-COMMANDS_RM_WEIGHTS = [0.5, 0.2, 0.3]
+COMMANDS_WEIGHTS = [0.42, 0.2, 0.38]
 
 def main(args: argparse.Namespace) -> None: 
-    if args.support_remove: 
-        commands = COMMANDS_RM
-        commands_weights = COMMANDS_RM_WEIGHTS
-    else:
-        commands = COMMANDS
-        commands_weights = COMMANDS_WEIGHTS
+    commands = COMMANDS_RM if args.support_remove else COMMANDS
     cases = []
     for _ in range(args.N) :
         length = randint(args.min_length, args.max_length)
@@ -24,7 +18,7 @@ def main(args: argparse.Namespace) -> None:
         outputs = []
         pq = PriorityQueue(MAX_SIZE)
         error = False
-        for command in choices(commands, commands_weights, k=length):
+        for command in choices(commands, COMMANDS_WEIGHTS, k=length):
             value = randint(0, 100) if command == 'insert' else 0
             case.append(f'(\'{command}\', {value})')
             if command == 'insert':
