@@ -4,13 +4,16 @@ globals().update({k: getattr(BT, k) for k in BT.__all__}) # from binary-tree imp
 
 import argparse
 from random import randint
+from tqdm import tqdm
 
 CASE_SEP = '**** ****'
 
 def main(args: argparse.Namespace): 
     cases = []
-    for _ in range(args.N) :
+    p_bar = tqdm(range(args.N))
+    for _ in p_bar:
         height = randint(args.min_height, args.max_height)
+        p_bar.set_description(f'Generating a random binary tree of height {height}')
         root: BinaryNode = generate_random_binary_tree(height)
         str_tree: str = stringify_binary_tree(root)
         cases += [
