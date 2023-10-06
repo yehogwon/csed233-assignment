@@ -13,20 +13,27 @@
 #include <functional>
 #include <map>
 
-#define CREATE_FILE_STREAMS \
-    std::string temp_file = "/tmp/pa.test." + random_string(10) + time_stamp(); \
-    std::ofstream temp_out(temp_file); \
-    std::ifstream temp_in(temp_file);
+#define TMP_DIR "/tmp"
+#define TMP_FILE_PREFIX "__csed233.pa.test."
+#define TMP_FILE_VAR __tmp_file
+#define TMP_FILE_OUT_STREAM __tmp_out
+#define TMP_FILE_IN_STREAM __tmp_in
 
-#define GET_FILE_STREAM_CONTENT(x) \
-    std::string x = "", line; \
-    while (std::getline(temp_in, line)) { strip(line); x += line; } \
-    strip(x);
+#define CREATE_FUNCTION_RESULT(F, ...) \
+    std::string TMP_FILE_VAR = TMP_DIR "/" TMP_FILE_PREFIX + random_string(10) + time_stamp(); \
+    std::ofstream TMP_FILE_OUT_STREAM(TMP_FILE_VAR); \
+    F(TMP_FILE_OUT_STREAM, ##__VA_ARGS__); \
+    TMP_FILE_OUT_STREAM.close();
 
-#define CLOSE_FILE_STREAMS \
-    temp_out.close(); \
-    temp_in.close(); \
-    std::remove(temp_file.c_str());
+#define GET_FUNCTION_RESULT(X) \
+    std::ifstream TMP_FILE_IN_STREAM(TMP_FILE_VAR); \
+    std::string X, line; \
+    while (std::getline(TMP_FILE_IN_STREAM, line)) { strip(line); X += line; } \
+    strip(X); \
+    TMP_FILE_IN_STREAM.close();
+
+#define REMOVE_TMP_FILE \
+    std::remove(TMP_FILE_VAR.c_str());
 
 using function_no_args = void (*)(std::ofstream&);
 
@@ -113,30 +120,27 @@ const char* identity_cstr(const std::string &s) {
 }
 
 bool test_no_args(function_no_args fn, const std::string &expected_output) {
-    CREATE_FILE_STREAMS
-    fn(temp_out);
-    GET_FILE_STREAM_CONTENT(full_content)
-    CLOSE_FILE_STREAMS
+    CREATE_FUNCTION_RESULT(fn)
+    GET_FUNCTION_RESULT(full_content)
+    REMOVE_TMP_FILE
     std::cout << "GOT: " << full_content << std::endl;
     return full_content == expected_output;
 }
 
 template <typename T>
 bool test_1_args(function_1_args<T> fn, const std::pair<T, std::string> &test_case) {
-    CREATE_FILE_STREAMS
-    fn(temp_out, test_case.first);
-    GET_FILE_STREAM_CONTENT(full_content)
-    CLOSE_FILE_STREAMS
+    CREATE_FUNCTION_RESULT(fn, test_case.first)
+    GET_FUNCTION_RESULT(full_content)
+    REMOVE_TMP_FILE
     std::cout << "GOT: " << full_content << std::endl;
     return full_content == test_case.second;
 }
 
 template <typename T, typename U>
 bool test_2_args(function_2_args<T, U> fn, const std::pair<std::pair<T, U>, std::string> &test_case) {
-    CREATE_FILE_STREAMS
-    fn(temp_out, test_case.first.first, test_case.first.second);
-    GET_FILE_STREAM_CONTENT(full_content)
-    CLOSE_FILE_STREAMS
+    CREATE_FUNCTION_RESULT(fn, test_case.first.first, test_case.first.second)
+    GET_FUNCTION_RESULT(full_content)
+    REMOVE_TMP_FILE
     std::cout << "GOT: " << full_content << std::endl;
     return full_content == test_case.second;
 }
