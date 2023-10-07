@@ -1,11 +1,13 @@
 from typing import TypeVar, Generic, Optional, List, Tuple, Union, Callable
 from random import randint, random, shuffle
+import argparse
 
 __all__ = [
     'BinaryNode', 
     'traverse_binary_tree', 
     'stringify_binary_tree',
-    'generate_random_binary_tree'
+    'generate_random_binary_tree', 
+    'reconstruct_from_traversal'
 ]
 
 T = TypeVar('T')
@@ -114,7 +116,9 @@ def generate_random_binary_tree(height: int, _range: Tuple[int, int]=(0, 9), all
     if allow_dup: 
         rand_val_gen = lambda: randint(*_range)
     else: 
-        candidates = list(range(1, 2 ** height + 10))
+        candidates = list(range(*_range))
+        if len(candidates) < 2 ** height: 
+            candidates = list(range(1, 2 ** height + 10))
         shuffle(candidates)
         rand_val_gen = lambda: candidates.pop()
 
@@ -135,3 +139,22 @@ def reconstruct_from_traversal(inorder: list[T], traversal: list[T], mode: str) 
     left_traversal = traversal[1:len(left_inorder) + 1]
     right_traversal = traversal[len(left_inorder) + 1:]
     return BinaryNode(root_value, reconstruct_from_traversal(left_inorder, left_traversal, mode), reconstruct_from_traversal(right_inorder, right_traversal, mode))
+
+def main(args: argparse.Namespace) -> None: 
+    root = generate_random_binary_tree(args.height, (args.min, args.max), args.allow_dup)
+    print('stringify:', stringify_binary_tree(root))
+    print('preorder:', traverse_binary_tree(root, 'preorder'))
+    print('inorder:', traverse_binary_tree(root, 'inorder'))
+    print('postorder:', traverse_binary_tree(root, 'postorder'))
+    print('levelorder:', traverse_binary_tree(root, 'levelorder'))
+
+if __name__ == '__main__': 
+    parser = argparse.ArgumentParser(description='Binary Tree')
+    parser.add_argument('--height', '-H', type=int, default=4, help='Height of the binary tree')
+    parser.add_argument('--min', '-m', type=int, default=0, help='Minimum value of the binary tree')
+    parser.add_argument('--max', '-M', type=int, default=9, help='Maximum value of the binary tree')
+    parser.add_argument('--allow-dup', action='store_true', help='Allow duplicate values in the binary tree')
+    args = parser.parse_args()
+    # command example
+    # > python binary-tree.py --height 4 --range 0 9 --allow-dup
+    main(args)
