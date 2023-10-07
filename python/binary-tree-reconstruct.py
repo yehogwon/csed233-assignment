@@ -20,7 +20,7 @@ def main(args: argparse.Namespace):
         str_tree = stringify_binary_tree(root)
         in_order = ','.join(traverse_binary_tree(root, 'inorder').split())
         cases += [
-            (f'[{in_order}] [{",".join(traverse_binary_tree(root, mode).split())}] {mode}', str_tree) for mode in modes
+            (f'[{in_order}] [{",".join(traverse_binary_tree(root, mode).split())}] {mode[:3]}', str_tree) for mode in modes
         ]
     print((f'\n{CASE_SEP}\n').join([f'{tup[0]}\n{tup[1]}' for tup in cases]))
     print(CASE_SEP)
