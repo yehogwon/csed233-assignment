@@ -144,6 +144,7 @@ int inorderIdx[100]; // inorderIdx[x] = the index of x in inorder array. That is
 /////// NOTICE THAT I ADDED SOME CODES IN `task_4` FUNCTION TO DETECT ANY DUPLICATED VALUES ///////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+// NOTE: Check if these tree reconstruction algorithms detect invalid trees well
 string buildFromPreorder(int inLeft, int inRight) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
@@ -170,8 +171,22 @@ string buildFromPreorder(int inLeft, int inRight) {
 string buildFromPostorder(int inLeft, int inRight) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+    
+    int root_val = order[orderIndex--];
+    int root_idx = inorderIdx[root_val];
+    if (root_idx == -1 || root_idx < inLeft || root_idx > inRight) return "error"; // root is out of range
+    if (inLeft == inRight) {
+        if (inorder[inLeft] == root_val) return to_string(root_val);
+        else return "error";
+    }
 
-    return "";
+    std::string left, right;
+    if (inRight - root_idx > 0) right = buildFromPostorder(root_idx + 1, inRight);
+    if (root_idx - inLeft > 0) left = buildFromPostorder(inLeft, root_idx - 1);
+
+    if (left == "error" || right == "error") return "error";
+    return to_string(root_val) + "(" + left + ")(" + right + ")";
+
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
