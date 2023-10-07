@@ -7,6 +7,7 @@ from random import randint
 from tqdm import tqdm
 
 CASE_SEP = '**** ****'
+MAX_ARG_STR_LEN = 99
 
 def main(args: argparse.Namespace): 
     cases = []
@@ -24,9 +25,13 @@ def main(args: argparse.Namespace):
             output = 'error'
         else: 
             output = str_tree
-        cases += [
-            (f'[{in_order}] [{",".join(traverse_binary_tree(root, mode).split())}] {mode[:-5]}', output) for mode in modes
-        ]
+        if len(in_order) > MAX_ARG_STR_LEN:
+            continue
+        for mode in modes: 
+            trav = ','.join(traverse_binary_tree(root, mode).split())
+            if len(trav) > MAX_ARG_STR_LEN: 
+                continue
+            cases.append((f'[{in_order}] [{trav}] {mode[:-5]}', output))
     print((f'\n{CASE_SEP}\n').join([f'{tup[0]}\n{tup[1]}' for tup in cases]))
     print(CASE_SEP)
 
