@@ -130,10 +130,17 @@ def reconstruct_from_traversal(inorder: list[T], traversal: list[T], mode: str) 
     Reconstruct a binary tree from its inorder traversal and a traversal mode. 
     '''
     assert mode in ['preorder', 'postorder'], f'Invalid mode: {mode}'
+    if len(inorder) != len(traversal) \
+        or len(set(inorder)) != len(inorder) \
+        or len(set(traversal)) != len(traversal):
+        raise ValueError('Invalid tree traversal: the lengths of the traversals are not equal or there are duplicate values')
     if len(inorder) == 0: 
         return None
     root_value = traversal[0]
-    root_index = inorder.index(root_value)
+    try: 
+        root_index = inorder.index(root_value)
+    except ValueError:
+        raise ValueError('Invalid tree traversal: the root index out of range')
     left_inorder = inorder[:root_index]
     right_inorder = inorder[root_index + 1:]
     left_traversal = traversal[1:len(left_inorder) + 1]
