@@ -16,7 +16,7 @@ def main(args: argparse.Namespace):
     for _ in p_bar:
         height = randint(args.min_height, args.max_height)
         p_bar.set_description(f'Generating a random binary tree of height {height}')
-        root: BinaryNode = generate_random_binary_tree(height)
+        root: BinaryNode = generate_random_binary_tree(height, (0, 150))
         str_tree = stringify_binary_tree(root)
         in_order = ','.join(traverse_binary_tree(root, 'inorder').split())
         cases += [
