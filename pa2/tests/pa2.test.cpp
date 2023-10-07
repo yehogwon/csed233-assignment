@@ -55,29 +55,36 @@ int main(int argc, char **argv) {
             identity_cstr
         );
     } else if (test_name == "Task4") {
-        std::vector<char*> args;
-        const char *parsed_argv[3];
-        return test_iteration_1_args<const char**>(
+        std::array<const char*, 3> parsed_argv = {nullptr, nullptr, nullptr};
+
+        int ret = test_iteration_1_args<const char**>(
             one_args_functions_cstarr[test_name], 
             prefix, 
             answer_in, 
-            [&args, &parsed_argv](const std::string &s) -> const char** {
+            [&parsed_argv](const std::string &s) -> const char** {
+                // clear global variables
+                orderIndex = 0;
+                std::fill_n(inorder, 100, 0);
+                std::fill_n(order, 100, 0);
+                std::fill_n(inorderIdx, 100, 0);
+
                 std::istringstream iss(s);
                 std::string token;
-                while(iss >> token) {
-                    char *arg = new char[token.size() + 1];
-                    copy(token.begin(), token.end(), arg);
-                    arg[token.size()] = '\0';
-                    args.push_back(arg);
+                int i = 0;
+                while (std::getline(iss, token, ' ')) {
+                    assert(i < 3 && "Invalid number of arguments");
+                    if (parsed_argv[i] != nullptr) {
+                        delete[] parsed_argv[i];
+                        parsed_argv[i] = nullptr;
+                    }
+                    parsed_argv[i] = new char[token.size() + 1];
+                    strcpy(const_cast<char*>(parsed_argv[i++]), token.c_str());
                 }
-                assert(args.size() == 3 && "Invalid number of arguments");
-                parsed_argv[0] = args[0];
-                parsed_argv[1] = args[1];
-                parsed_argv[2] = args[2];
-                return parsed_argv;
+                return static_cast<const char**>(parsed_argv.data());
             }
         );
-        for (char* arg : args) delete[] arg;
+        for (int i = 0; i < 3; ++i) delete[] parsed_argv[i];
+        return ret;
     } else if (test_name == "Task5" || test_name == "Task6") {
         InstructionSequence instruction_sequence;
         return test_iteration_1_args<InstructionSequence&>(

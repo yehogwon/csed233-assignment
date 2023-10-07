@@ -135,16 +135,34 @@ void task_3(ofstream &fout, const char *tree_string,
         - “error” if given traversals cannot identify a binary tree.
         - String of a binary tree of format introduced in pre-2.
 */
-int orderIndex;
-int inorder[100];
-int order[100];
-int inorderIdx[100];
+int orderIndex; // index of the root node of current subtree in preorder or postorder traversal
+int inorder[100]; // inorder traversal
+int order[100]; // preorder or postorder traversal
+int inorderIdx[100]; // inorderIdx[x] = the index of x in inorder array. That is, inorder[inorderIdx[x]] = x
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+/////// NOTICE THAT I ADDED SOME CODES IN `task_4` FUNCTION TO DETECT ANY DUPLICATED VALUES ///////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 string buildFromPreorder(int inLeft, int inRight) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+    
+    int root_val = order[orderIndex++];
+    int root_idx = inorderIdx[root_val];
+    if (root_idx == -1 || root_idx < inLeft || root_idx > inRight) return "error"; // root is out of range
+    if (inLeft == inRight) {
+        if (inorder[inLeft] == root_val) return to_string(root_val);
+        else return "error";
+    }
 
-    return "";
+    std::string left, right;
+    if (root_idx - inLeft > 0) left = buildFromPreorder(inLeft, root_idx - 1);
+    if (inRight - root_idx > 0) right = buildFromPreorder(root_idx + 1, inRight);
+
+    if (left == "error" || right == "error") return "error";
+    return to_string(root_val) + "(" + left + ")(" + right + ")";
+
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
@@ -174,7 +192,7 @@ void task_4(ofstream &fout, const char* argv[]) {
     string answer;
 
     parseInput4(argv[0], inorder);
-    int n = 0;
+    int n = 0; // length of inorder
     while (inorder[n])
         n++;
 
@@ -188,14 +206,30 @@ void task_4(ofstream &fout, const char* argv[]) {
         inorderIdx[inorder[i]] = i;
     }
     parseInput4(argv[1], order);
-    int m = 0;
+    int m = 0; // length of order
     while (order[m])
         m++;
 
-    if (n != m) {
+    if (n != m) { // invalid if two traversals have different lengths
         fout << "error" << endl;
         return;
     }
+
+    // check if there is a duplicate value in the given inorder traversal
+    for (int i = 0; i < n; i++)
+        for (int j = i + 1; j < n; j++)
+            if (inorder[i] == inorder[j]) {
+                fout << "error" << endl;
+                return;
+            }
+
+    // check if there is a duplicate value in the given pre/postorder traversal
+    for (int i = 0; i < m; i++)
+        for (int j = i + 1; j < m; j++)
+            if (order[i] == order[j]) {
+                fout << "error" << endl;
+                return;
+            }
 
     // Compare type of traversal and choose proper function
     if (strcmp(argv[2], "pre") == 0) {
