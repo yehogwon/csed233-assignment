@@ -1,5 +1,5 @@
 from typing import TypeVar, Generic, Optional, List, Tuple, Union, Callable
-from random import randint, random
+from random import randint, random, shuffle
 
 __all__ = [
     'BinaryNode', 
@@ -100,6 +100,7 @@ def stringify_binary_tree(root: BinaryNode) -> str:
 
 gen_prob = randint(30, 100) / 100
 generate_prob = lambda: random() < gen_prob
+candidates = []
 def _generate_random_binary_tree(height: int, rand_val_gen: Callable, force: bool=False) -> BinaryNode:
     if height == 0: 
         return None
@@ -107,8 +108,17 @@ def _generate_random_binary_tree(height: int, rand_val_gen: Callable, force: boo
         return BinaryNode(rand_val_gen()) if generate_prob() or force else None
     return BinaryNode(rand_val_gen(), _generate_random_binary_tree(height - 1, rand_val_gen), _generate_random_binary_tree(height - 1, rand_val_gen))
 
-def generate_random_binary_tree(height: int, range: Tuple[int, int]=(0, 9)) -> BinaryNode: 
-    return _generate_random_binary_tree(height, rand_val_gen=lambda: randint(*range), force=True)
+def generate_random_binary_tree(height: int, _range: Tuple[int, int]=(0, 9), allow_dup: bool=True) -> BinaryNode: 
+    global candidates
+    candidates = []
+    if allow_dup: 
+        rand_val_gen = lambda: randint(*_range)
+    else: 
+        candidates = list(range(1, 2 ** height + 10))
+        shuffle(candidates)
+        rand_val_gen = lambda: candidates.pop()
+
+    return _generate_random_binary_tree(height, rand_val_gen=rand_val_gen, force=True)
 
 T = TypeVar('T')
 def reconstruct_from_traversal(inorder: list[T], traversal: list[T], mode: str) -> BinaryNode[T]: 
