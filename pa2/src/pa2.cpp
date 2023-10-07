@@ -148,14 +148,18 @@ string buildFromPreorder(int inLeft, int inRight) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
     
-    // NOTE: recursion escape for error case (error detection)
-    if (inLeft > inRight) return "";
     int root_val = order[orderIndex++];
     int root_idx = inorderIdx[root_val];
-    if (root_idx == -1) return "error";
-    if (inLeft == inRight) return to_string(root_val);
-    string left = buildFromPreorder(inLeft, root_idx - 1);
-    string right = buildFromPreorder(root_idx + 1, inRight);
+    if (root_idx == -1 || root_idx < inLeft || root_idx > inRight) return "error"; // root is out of range
+    if (inLeft == inRight) {
+        if (inorder[inLeft] == root_val) return to_string(root_val);
+        else return "error";
+    }
+
+    std::string left, right;
+    if (root_idx - inLeft > 0) left = buildFromPreorder(inLeft, root_idx - 1);
+    if (inRight - root_idx > 0) right = buildFromPreorder(root_idx + 1, inRight);
+
     if (left == "error" || right == "error") return "error";
     return to_string(root_val) + "(" + left + ")(" + right + ")";
 
