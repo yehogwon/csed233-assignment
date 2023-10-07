@@ -20,4 +20,5 @@ jobs:
     - name: Perform CTest
       run: |
         cd build
-        ctest -V
+        ctest -j -V
+      # ctest -j $(nproc --all) -V
