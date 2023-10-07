@@ -94,6 +94,8 @@ def stringify_binary_tree(root: BinaryNode) -> str:
     '''
     if root is None: 
         return ''
+    if not root.left and not root.right:
+        return f'{root.value}'
     return f'{root.value}({stringify_binary_tree(root.left)})({stringify_binary_tree(root.right)})'
 
 rand_val = lambda: randint(0, 9)
@@ -108,3 +110,19 @@ def _generate_random_binary_tree(height: int, force: bool=False) -> BinaryNode:
 
 def generate_random_binary_tree(height: int) -> BinaryNode: 
     return _generate_random_binary_tree(height, force=True)
+
+T = TypeVar('T')
+def reconstruct_from_traversal(inorder: list[T], traversal: list[T], mode: str) -> BinaryNode[T]: 
+    r'''
+    Reconstruct a binary tree from its inorder traversal and a traversal mode. 
+    '''
+    assert mode in ['preorder', 'postorder'], f'Invalid mode: {mode}'
+    if len(inorder) == 0: 
+        return None
+    root_value = traversal[0]
+    root_index = inorder.index(root_value)
+    left_inorder = inorder[:root_index]
+    right_inorder = inorder[root_index + 1:]
+    left_traversal = traversal[1:len(left_inorder) + 1]
+    right_traversal = traversal[len(left_inorder) + 1:]
+    return BinaryNode(root_value, reconstruct_from_traversal(left_inorder, left_traversal, mode), reconstruct_from_traversal(right_inorder, right_traversal, mode))
