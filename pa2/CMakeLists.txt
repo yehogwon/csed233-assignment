@@ -11,11 +11,9 @@ add_subdirectory(
 )
 
 include(CTest)
-# enable parallel testing
 set(CTEST_PARALLEL_LEVEL 4)
 
 function(pa2_test test_name)
-    # if suffix (optional argument) is provided, add it to the test name
     if (ARGN)
         set(display_test_name "${test_name}::${ARGN}")
     else()
@@ -34,6 +32,7 @@ pa2_test(Task3 PRE)
 pa2_test(Task3 IN)
 pa2_test(Task3 POST)
 pa2_test(Task3 LEVEL)
-# pa2_test(Task4)
+# pa2_test(Task4 PRE)
+# pa2_test(Task4 POST)
 pa2_test(Task5)
 pa2_test(Task6)
