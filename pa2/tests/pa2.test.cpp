@@ -62,6 +62,12 @@ int main(int argc, char **argv) {
             prefix, 
             answer_in, 
             [&parsed_argv](const std::string &s) -> const char** {
+                // clear global variables
+                orderIndex = 0;
+                std::fill_n(inorder, 100, 0);
+                std::fill_n(order, 100, 0);
+                std::fill_n(inorderIdx, 100, 0);
+
                 std::istringstream iss(s);
                 std::string token;
                 int i = 0;
