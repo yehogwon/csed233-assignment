@@ -55,8 +55,9 @@ int main(int argc, char **argv) {
             identity_cstr
         );
     } else if (test_name == "Task4") {
-        const char *parsed_argv[3];
-        return test_iteration_1_args<const char**>(
+        std::array<const char*, 3> parsed_argv = {nullptr, nullptr, nullptr};
+
+        int ret = test_iteration_1_args<const char**>(
             one_args_functions_cstarr[test_name], 
             prefix, 
             answer_in, 
@@ -64,15 +65,20 @@ int main(int argc, char **argv) {
                 std::istringstream iss(s);
                 std::string token;
                 int i = 0;
-                while(std::getline(iss, token, ' ')) {
+                while (std::getline(iss, token, ' ')) {
                     assert(i < 3 && "Invalid number of arguments");
-                    parsed_argv[i] = new char[token.length() + 1];
+                    if (parsed_argv[i] != nullptr) {
+                        delete[] parsed_argv[i];
+                        parsed_argv[i] = nullptr;
+                    }
+                    parsed_argv[i] = new char[token.size() + 1];
                     strcpy(const_cast<char*>(parsed_argv[i++]), token.c_str());
                 }
-                return parsed_argv;
+                return static_cast<const char**>(parsed_argv.data());
             }
         );
         for (int i = 0; i < 3; ++i) delete[] parsed_argv[i];
+        return ret;
     } else if (test_name == "Task5" || test_name == "Task6") {
         InstructionSequence instruction_sequence;
         return test_iteration_1_args<InstructionSequence&>(
