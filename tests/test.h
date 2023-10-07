@@ -53,11 +53,15 @@ const char *CASE_SEP = "**** ****";
 
 std::vector<std::string> init_test(int pa_id, int argc, char **argv) {
     // If successful, returns {test_name, prefix, answer_path}
-    if (!(argc == 2 || argc == 3)) { // invalid arguments (requires test name)
+    if (!(argc == 2 || argc == 3 || argc == 4)) { // invalid arguments (requires test name)
         std::cout << "Invalid arguments" << std::endl;
         std::cout << "Usage: ./pa" << pa_id << ".test.out <test_name>" << std::endl;
         std::cout << "Or" << std::endl;
-        std::cout << "Usage: ./pa" << pa_id << ".test.out <test_name> <answer_dir_path>" << std::endl;
+        std::cout << "Usage: ./pa" << pa_id << ".test.out <test_name> <suffix>" << std::endl;
+        std::cout << "Or" << std::endl;
+        std::cout << "Usage: ./pa" << pa_id << ".test.out <test_name> <suffix> <answer_dir_path>" << std::endl;
+        std::cout << "By default, <suffix> is empty and <answer_dir_path> is \"data/\"" << std::endl;
+        std::cout << "If suffix is non-empty, the answer file will be <answer_dir_path>/<lower_test_name>.<suffix>.txt" << std::endl;
         return {};
     }
     
@@ -69,11 +73,16 @@ std::vector<std::string> init_test(int pa_id, int argc, char **argv) {
     std::string prefix = "[" + test_name + "]";
     prefix.insert(5, " ");
 
-    std::string data_path = argc == 2 ? "data/" : std::string(argv[2]);
-    std::string answer_path = data_path + test_name_lower + ".txt";
+    std::string suffix = argc == 3 ? std::string(argv[2]) : "";
+    std::string suffix_lower = suffix;
+    std::transform(suffix_lower.begin(), suffix_lower.end(), suffix_lower.begin(), ::tolower);
+
+    std::string answer_file_name = test_name_lower + (suffix_lower.size() > 0 ? "." : "") + suffix_lower + ".txt";
+    std::string data_path = argc != 4 ? "data/" : std::string(argv[3]);
+    std::string answer_path = data_path + answer_file_name;
     
     if (access(answer_path.c_str(), F_OK) == -1) {
-        std::cout << "Answer file does not exist" << std::endl;
+        std::cout << "Answer file does not exist: " << answer_path << std::endl;
         return {};
     }
     return {test_name, prefix, answer_path};
