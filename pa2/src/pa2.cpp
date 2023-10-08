@@ -359,7 +359,7 @@ void task_6(ofstream &fout, InstructionSequence &instr_seq)
 
                 /* BEGIN_YOUR_CODE*/
                 if (!pq.insert(input_value, input_value)) {
-                    fout << "Error"; // NOTE: Check if I need to check if pq is full
+                    fout << "Error";
                     return;
                 }
                 /* END_YOUR_CODE */
