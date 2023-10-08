@@ -14,9 +14,9 @@ jobs:
     - name: Check Build Success
       run: |
         mkdir -p .github/logs
-        cmake -B build -D CMAKE_BUILD_TYPE=Release 1> .github/logs/build/cmake.stdout.log 2> .github/logs/build/cmake.stderr.log
+        cmake -B build -D CMAKE_BUILD_TYPE=Release 1> .github/logs/cmake.stdout.log 2> .github/logs/cmake.stderr.log
         cd build
-        make -j 1> ../.github/logs/build/make.stdout.log 2> ../.github/logs/build/make.stderr.log
+        make -j 1> ../.github/logs/make.stdout.log 2> ../.github/logs/make.stderr.log
     - name: Perform CTest
       run: |
         cd build
