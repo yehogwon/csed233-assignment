@@ -144,10 +144,11 @@ int inorderIdx[100]; // inorderIdx[x] = the index of x in inorder array. That is
 /////// NOTICE THAT I ADDED SOME CODES IN `task_4` FUNCTION TO DETECT ANY DUPLICATED VALUES ///////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// NOTE: Check if these tree reconstruction algorithms detect invalid trees well
 string buildFromPreorder(int inLeft, int inRight) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+
+    if (inRight == -1) return ""; // empty tree
     
     int root_val = order[orderIndex++];
     int root_idx = inorderIdx[root_val];
@@ -171,6 +172,8 @@ string buildFromPreorder(int inLeft, int inRight) {
 string buildFromPostorder(int inLeft, int inRight) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+
+    if (inRight == -1) return ""; // empty tree
     
     int root_val = order[orderIndex--];
     int root_idx = inorderIdx[root_val];
@@ -356,7 +359,7 @@ void task_6(ofstream &fout, InstructionSequence &instr_seq)
 
                 /* BEGIN_YOUR_CODE*/
                 if (!pq.insert(input_value, input_value)) {
-                    fout << "Error"; // NOTE: Check if I need to check if pq is full
+                    fout << "Error";
                     return;
                 }
                 /* END_YOUR_CODE */
