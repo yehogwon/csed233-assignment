@@ -144,10 +144,11 @@ int inorderIdx[100]; // inorderIdx[x] = the index of x in inorder array. That is
 /////// NOTICE THAT I ADDED SOME CODES IN `task_4` FUNCTION TO DETECT ANY DUPLICATED VALUES ///////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// NOTE: Make these functions return the empty string for the empty tree
 string buildFromPreorder(int inLeft, int inRight) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+
+    if (inRight == -1) return ""; // empty tree
     
     int root_val = order[orderIndex++];
     int root_idx = inorderIdx[root_val];
@@ -171,6 +172,8 @@ string buildFromPreorder(int inLeft, int inRight) {
 string buildFromPostorder(int inLeft, int inRight) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+
+    if (inRight == -1) return ""; // empty tree
     
     int root_val = order[orderIndex--];
     int root_idx = inorderIdx[root_val];
