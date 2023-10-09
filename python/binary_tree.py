@@ -66,29 +66,44 @@ def construct_from_string(s: Optional[str]) -> BinaryNode:
     _value, _left_string, _right_string = _split_binary_tree_format(s)
     return BinaryNode(_value, construct_from_string(_left_string), construct_from_string(_right_string))
 
-def _traverse_binary_tree(root: BinaryNode, mode: str) -> str: 
-    assert mode in ['preorder', 'inorder', 'postorder', 'levelorder'], f'Invalid mode: {mode}'
+def _preorder_binary_tree(root: BinaryNode) -> str: 
     if root is None: 
         return ''
-    if mode == 'preorder':
-        return f'{root.value} {_traverse_binary_tree(root.left, mode)} {_traverse_binary_tree(root.right, mode)}'
-    elif mode == 'inorder':
-        return f'{_traverse_binary_tree(root.left, mode)} {root.value} {_traverse_binary_tree(root.right, mode)}'
-    elif mode == 'postorder':
-        return f'{_traverse_binary_tree(root.left, mode)} {_traverse_binary_tree(root.right, mode)} {root.value}'
-    elif mode == 'levelorder':
-        queue: List[BinaryNode] = [root]
-        result = ''
-        while len(queue) > 0: 
-            node = queue.pop(0)
-            if node is not None: 
-                result += f'{node.value} '
-                queue.append(node.left)
-                queue.append(node.right)
-        return result
+    return f'{root.value} {_preorder_binary_tree(root.left)} {_preorder_binary_tree(root.right)}'
+
+def _inorder_binary_tree(root: BinaryNode) -> str:
+    if root is None: 
+        return ''
+    return f'{_inorder_binary_tree(root.left)} {root.value} {_inorder_binary_tree(root.right)}'
+
+def _postorder_binary_tree(root: BinaryNode) -> str:
+    if root is None: 
+        return ''
+    return f'{_postorder_binary_tree(root.left)} {_postorder_binary_tree(root.right)} {root.value}'
+
+def _levelorder_binary_tree(root: BinaryNode) -> str:
+    if root is None: 
+        return ''
+    queue: List[BinaryNode] = [root]
+    result = ''
+    while len(queue) > 0: 
+        node = queue.pop(0)
+        if node is not None: 
+            result += f'{node.value} '
+            queue.append(node.left)
+            queue.append(node.right)
+    return result
 
 def traverse_binary_tree(root: BinaryNode, mode: str) -> str: 
-    return ' '.join(_traverse_binary_tree(root, mode).strip().split())
+    assert mode in ['preorder', 'inorder', 'postorder', 'levelorder'], f'Invalid mode: {mode}'
+    if mode == 'preorder':
+        return _preorder_binary_tree(root)
+    elif mode == 'inorder':
+        return _inorder_binary_tree(root)
+    elif mode == 'postorder':
+        return _postorder_binary_tree(root)
+    elif mode == 'levelorder':
+        return _levelorder_binary_tree(root)
 
 def stringify_binary_tree(root: BinaryNode) -> str: 
     r'''
