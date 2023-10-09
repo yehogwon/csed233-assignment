@@ -25,6 +25,11 @@ class BinaryNode(Generic[T]):
     
     def num_children(self) -> int:
         return int(self.left is not None) + int(self.right is not None)
+    
+    def __eq__(self, other: 'BinaryNode[T]') -> bool:
+        if not isinstance(other, BinaryNode): 
+            return False
+        return self.value == other.value and self.left == other.left and self.right == other.right
 
     def __repr__(self) -> str:
         return f'BinaryNode({self.value} -> # of children: {self.num_children()})'
