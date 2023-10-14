@@ -31,7 +31,6 @@ private:
     /////////////////////////////////////////////////////////
     //////  TODO: Add Private members if required ///////////
     void _currentLevel(string &list, Node *a, int level);
-    void _general_tree(string &list, Node *a);
     void general_preorder(std::string &list, Node *node);
 
     int _height(Node *node);

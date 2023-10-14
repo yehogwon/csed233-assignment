@@ -1,11 +1,8 @@
-import importlib
-BT = importlib.import_module('binary-tree')
-globals().update({k: getattr(BT, k) for k in BT.__all__}) # from binary-tree import *
-
 import argparse
 from random import randint, sample
 from tqdm import tqdm
 import sys
+from binary_tree import *
 
 CASE_SEP = '**** ****'
 MAX_ARG_STR_LEN = 99
