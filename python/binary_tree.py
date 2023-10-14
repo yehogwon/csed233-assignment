@@ -26,6 +26,44 @@ class BinaryNode(Generic[T]):
     def num_children(self) -> int:
         return int(self.left is not None) + int(self.right is not None)
     
+    def preorder(self) -> str: 
+        ret = ''
+        ret += f'{self.value} '
+        if self.left is not None:
+            ret += self.left.preorder()
+        if self.right is not None:
+            ret += self.right.preorder()
+        return ret
+    
+    def inorder(self) -> str:
+        ret = ''
+        if self.left is not None:
+            ret += self.left.inorder()
+        ret += f'{self.value} '
+        if self.right is not None:
+            ret += self.right.inorder()
+        return ret
+    
+    def postorder(self) -> str:
+        ret = ''
+        if self.left is not None:
+            ret += self.left.postorder()
+        if self.right is not None:
+            ret += self.right.postorder()
+        ret += f'{self.value} '
+        return ret
+    
+    def levelorder(self) -> str:
+        queue: List[BinaryNode] = [self]
+        ret = ''
+        while len(queue) > 0: 
+            node = queue.pop(0)
+            if node is not None: 
+                ret += f'{node.value} '
+                queue.append(node.left)
+                queue.append(node.right)
+        return ret
+    
     def __eq__(self, other: 'BinaryNode[T]') -> bool:
         if not isinstance(other, BinaryNode): 
             return False
@@ -71,44 +109,16 @@ def construct_from_string(s: Optional[str]) -> BinaryNode:
     _value, _left_string, _right_string = _split_binary_tree_format(s)
     return BinaryNode(_value, construct_from_string(_left_string), construct_from_string(_right_string))
 
-def _preorder_binary_tree(root: BinaryNode) -> str: 
-    if root is None: 
-        return ''
-    return f'{root.value} {_preorder_binary_tree(root.left)} {_preorder_binary_tree(root.right)}'
-
-def _inorder_binary_tree(root: BinaryNode) -> str:
-    if root is None: 
-        return ''
-    return f'{_inorder_binary_tree(root.left)} {root.value} {_inorder_binary_tree(root.right)}'
-
-def _postorder_binary_tree(root: BinaryNode) -> str:
-    if root is None: 
-        return ''
-    return f'{_postorder_binary_tree(root.left)} {_postorder_binary_tree(root.right)} {root.value}'
-
-def _levelorder_binary_tree(root: BinaryNode) -> str:
-    if root is None: 
-        return ''
-    queue: List[BinaryNode] = [root]
-    result = ''
-    while len(queue) > 0: 
-        node = queue.pop(0)
-        if node is not None: 
-            result += f'{node.value} '
-            queue.append(node.left)
-            queue.append(node.right)
-    return result
-
 def traverse_binary_tree(root: BinaryNode, mode: str) -> str: 
     assert mode in ['preorder', 'inorder', 'postorder', 'levelorder'], f'Invalid mode: {mode}'
     if mode == 'preorder':
-        return _preorder_binary_tree(root)
+        return root.preorder(root)
     elif mode == 'inorder':
-        return _inorder_binary_tree(root)
+        return root.inorder(root)
     elif mode == 'postorder':
-        return _postorder_binary_tree(root)
+        return root.postorder(root)
     elif mode == 'levelorder':
-        return _levelorder_binary_tree(root)
+        return root.levelorder(root)
 
 def stringify_binary_tree(root: BinaryNode) -> str: 
     r'''
