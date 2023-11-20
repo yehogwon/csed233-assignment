@@ -24,13 +24,13 @@ int main(int argc, char **argv) {
         {"Task2", task_2},
     };
 
-    std::map<std::string, function_1_args<InstructionSequence*>> one_args_functions = {
+    std::map<std::string, function_args<InstructionSequence*>> one_args_functions = {
         {"Task3", task_3},
         {"Task5", task_5},
         {"Task6", task_6},
     };
 
-    std::map<std::string, function_1_args<std::string>> one_args_functions_str = {
+    std::map<std::string, function_args<std::string>> one_args_functions_str = {
         {"Task4", task_4},
     };
     
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
             [](const std::string &str) -> InstructionSequence* {
                 return ParseInstructions(str.c_str());
             }, 
-            test_name == "Task6"
+            test_name == "Task5"
         );
     } else if (test_name == "Task4") {
         std::ifstream answer_in(answer_path);

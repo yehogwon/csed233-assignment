@@ -21,20 +21,20 @@ int main(int argc, char **argv) {
     answer_path = init_info[2];
     std::ifstream answer_in(answer_path);
 
-    std::map<std::string, function_1_args<const char*>> one_args_functions_cstr = {
+    std::map<std::string, function_args<const char*>> one_args_functions_cstr = {
         {"Task1", task_1},
         {"Task2", task_2},
     };
 
-    std::map<std::string, function_2_args<const char*, const char*>> two_args_functions_cstrs = {
+    std::map<std::string, function_args<const char*, const char*>> two_args_functions_cstrs = {
         {"Task3", task_3},
     };
 
-    std::map<std::string, function_1_args<const char*[]>> one_args_functions_cstarr = {
+    std::map<std::string, function_args<const char*[]>> one_args_functions_cstarr = {
         {"Task4", task_4},
     };
 
-    std::map<std::string, function_1_args<InstructionSequence&>> one_args_functions_insts = {
+    std::map<std::string, function_args<InstructionSequence&>> one_args_functions_insts = {
         {"Task5", task_5},
         {"Task6", task_6},
     };
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
         for (char* arg : args) delete[] arg;
     } else if (test_name == "Task5" || test_name == "Task6") {
         InstructionSequence instruction_sequence;
-        return test_iteration_1_args<InstructionSequence&>(
+        return test_iteration_args<InstructionSequence&>(
             one_args_functions_insts[test_name], 
             prefix, 
             answer_in, 
@@ -89,6 +89,7 @@ int main(int argc, char **argv) {
                 return instruction_sequence;
             }
         );
+        return 0;
     } else {
         std::cout << "Invalid test name" << std::endl;
         return -2; // invalid test name

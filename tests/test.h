@@ -6,12 +6,11 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-#include <cstdio>
 #include <fstream>
-#include <unistd.h>
 #include <functional>
-#include <map>
 #include <tuple>
+#include <vector>
+#include "utils.h"
 
 #define CREATE_FILE_STREAMS \
     std::string temp_file = "/tmp/pa.test." + random_string(10) + time_stamp(); \
@@ -30,20 +29,8 @@
 
 using function_no_args = void (*)(std::ofstream&);
 
-template <typename T>
-using function_1_args = std::function<void(std::ofstream&, T)>;
-
-template <typename T, typename U>
-using function_2_args = std::function<void(std::ofstream&, T, U)>;
-
 template <typename... Types>
 using function_args = std::function<void(std::ofstream&, Types...)>;
-
-template <typename T>
-using function_parse_input = std::function<T(const std::string&)>;
-
-const char *SYMBOLS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const int SYMBOLS_LEN = 62;
 
 const char *CASE_SEP = "**** ****";
 
@@ -75,38 +62,6 @@ std::vector<std::string> init_test(int pa_id, int argc, char **argv) {
     return {test_name, prefix, answer_path};
 }
 
-std::string time_stamp() {
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-    std::string ts = std::to_string(ltm->tm_year + 1900) + std::to_string(ltm->tm_mon + 1) + std::to_string(ltm->tm_mday) + std::to_string(ltm->tm_hour) + std::to_string(ltm->tm_min) + std::to_string(ltm->tm_sec);
-    return ts;
-}
-
-std::string random_string(const int len) {
-    std::string rstr;
-    rstr.reserve(len);
-    for (int i = 0; i < len; i++) rstr += SYMBOLS[std::rand() % SYMBOLS_LEN];
-    return rstr;
-}
-
-inline void lstrip(std::string &s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
-        return !std::isspace(ch) && ch != '\n';
-    }));
-}
-
-
-inline void rstrip(std::string &s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
-        return !std::isspace(ch);
-    }).base(), s.end());
-}
-
-inline void strip(std::string &s) {
-    lstrip(s);
-    rstrip(s);
-}
-
 std::string identity_string(const std::string &s) {
     return s;
 }
@@ -124,93 +79,12 @@ bool test_no_args(function_no_args fn, const std::string &expected_output) {
     return full_content == expected_output;
 }
 
-template <typename T>
-bool test_1_args(function_1_args<T> fn, const std::pair<T, std::string> &test_case) {
-    CREATE_FILE_STREAMS
-    fn(temp_out, test_case.first);
-    GET_FILE_STREAM_CONTENT(full_content)
-    CLOSE_FILE_STREAMS
-    std::cout << "GOT: " << full_content << std::endl;
-    return full_content == test_case.second;
-}
-
-template <typename T, typename U>
-bool test_2_args(function_2_args<T, U> fn, const std::pair<std::pair<T, U>, std::string> &test_case) {
-    CREATE_FILE_STREAMS
-    fn(temp_out, test_case.first.first, test_case.first.second);
-    GET_FILE_STREAM_CONTENT(full_content)
-    CLOSE_FILE_STREAMS
-    std::cout << "GOT: " << full_content << std::endl;
-    return full_content == test_case.second;
-}
-
-template <typename T, typename... Types>
-bool test_args(function_args<T, Types...> fn, const std::pair<std::tuple<T, Types...>, std::string> &test_case) {
-    CREATE_FILE_STREAMS
-    std::apply([&fn, &temp_out](auto&&... args) { fn(temp_out, args...); }, test_case.first);
-    GET_FILE_STREAM_CONTENT(full_content)
-    CLOSE_FILE_STREAMS
-    std::cout << "GOT: " << full_content << std::endl;
-    return full_content == test_case.second;
-}
-
 int test_iteration_0_args(const function_no_args fn, const std::string &prefix, std::ifstream &answer_in) {
     std::string answer;
     std::getline(answer_in, answer);
     answer_in.close();
     answer = prefix + answer;
     return !test_no_args(fn, answer);
-}
-
-template <typename T>
-int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix, std::ifstream &answer_in, function_parse_input<T> parse_input, const bool nothing_for_empty=false) {
-    std::string input, answer, tmp;
-    while (std::getline(answer_in, input)) {
-        answer = "";
-        while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
-            strip(tmp);
-            answer += prefix + tmp;
-        }
-        if (nothing_for_empty && answer == prefix) answer = ""; // `nothing_for_empty` is True when the task does not print even [Task #] when that is the only line to print. 
-        strip(input);
-        std::pair<T, std::string> test_case = {
-            parse_input(input),
-            answer
-        };
-        std::cout << "Testing: " << input << " -> " << test_case.second << std::endl;
-        if (!test_1_args<T>(fn, test_case)) {
-            std::cout << "Failed..." << std::endl;
-            return 1;
-        }
-    }
-    return 0;
-}
-
-template <typename T, typename U>
-int test_iteration_2_args(const function_2_args<T, U> fn, const std::string &prefix, std::ifstream &answer_in, function_parse_input<T> parse_input1, function_parse_input<U> parse_input2, const bool nothing_for_empty=false) {
-    std::string input1, input2, answer, tmp;
-    while (std::getline(answer_in, input1) && std::getline(answer_in, input2)) {
-        answer = "";
-        while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
-            strip(tmp);
-            answer += prefix + tmp;
-        }
-        if (nothing_for_empty && answer == prefix) answer = ""; // If the answer is the empty string, Task 6 does not print anything. 
-        strip(input1); strip(input2);
-        std::pair<std::pair<T, U>, std::string> test_case = {
-            {
-                parse_input1(input1), 
-                parse_input2(input2)
-            },
-            answer
-        };
-        std::cout << "Testing: {" << input1 << "," << input2 << "} -> " << test_case.second << std::endl;
-        if (!test_2_args<T, U>(fn, test_case)) {
-            std::cout << "Failed..." << std::endl;
-            return 1;
-        }
-    }
-    return 0;
 }
 
 int _getlines(std::ifstream &in, std::string *lines, int n_lines) {
@@ -223,17 +97,25 @@ int _getlines(std::ifstream &in, std::string *lines, int n_lines) {
     return n_lines;
 }
 
-template <typename T, typename... Types>
+template <typename... Types>
+bool test_args(function_args<Types...> fn, Types... args, const std::string &answer) {
+    CREATE_FILE_STREAMS
+    fn(temp_out, args...);
+    GET_FILE_STREAM_CONTENT(full_content)
+    CLOSE_FILE_STREAMS
+    std::cout << "GOT: " << full_content << std::endl;
+    return full_content == answer;
+}
+
+template <typename... Types>
 int test_iteration_args(
-        const function_args<T, Types...> fn, 
+        const function_args<Types...> fn, 
         const std::string &prefix, std::ifstream &answer_in, 
-        function_parse_input<T> parse_input,
-        function_parse_input<Types>... parse_inputs,
+        function_of_str<Types>... parse_inputs_fn,
         const bool nothing_for_empty=false
     ) {
-    constexpr int n_inputs = sizeof...(Types) + 1;
+    constexpr int n_inputs = sizeof...(Types);
     std::string inputs[n_inputs], answer, tmp;
-    std::tuple<T, Types...> parsed_inputs;
     
     while (_getlines(answer_in, inputs, n_inputs) == n_inputs) {
         answer = "";
@@ -241,29 +123,22 @@ int test_iteration_args(
             strip(tmp);
             answer += prefix + tmp;
         }
-        if (nothing_for_empty && answer == prefix) answer = ""; // If the answer is the empty string, Task 6 does not print anything. 
-
-        int var_index = 1;
-        std::get<0>(parsed_inputs) = parse_input(inputs[var_index]);
-        ([&var_index, &inputs, &parsed_inputs, &parse_inputs]
-        {
-            var_index++;
-            std::get<var_index>(parsed_inputs) = parse_inputs[var_index](inputs[var_index]);
-        } (), ...);
-
-        std::pair<std::tuple<T, Types...>, std::string> test_case = {
-            parsed_inputs,
-            answer
-        };
+        if (nothing_for_empty && answer == prefix) answer = ""; // If the answer is the empty string, follow the nothing_for_empty flag
+        
+        std::vector<std::variant<std::string, Types...>> test_args;
+        apply_vector(test_args, parse_inputs_fn...);
         
         std::cout << "Testing: {";
         for (int i = 0; i < n_inputs; i++) {
             std::cout << inputs[i];
             if (i < n_inputs - 1) std::cout << ",";
         }
-        std::cout << "} -> " << test_case.second << std::endl;
+        std::cout << "} -> " << answer << std::endl;
 
-        if (!test_args<T, Types...>(fn, test_case)) {
+        test_args.push_back(answer);
+        unpack_caller<n_inputs + 1, function_args<Types...>, std::variant<std::string, Types...>> caller;
+        if (!caller(fn, test_args)) {
+        // if (!test_args<Types...>(fn, parsed_inputs, answer)) {
             std::cout << "Failed..." << std::endl;
             return 1;
         }
