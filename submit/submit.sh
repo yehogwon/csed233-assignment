@@ -10,6 +10,7 @@ NORMAL=$(tput sgr0)
 declare -a submission_files=(
     "src/pa1.cpp" # PA1
     "src/pa2.cpp src/tree.cpp include/tree.h src/heap.cpp include/heap.h" # PA2
+    "src/pa3.cpp src/closed_hash_function.cpp src/closed_hash_table.cpp src/open_hash_function.cpp src/open_hash_table.cpp src/sort.cpp src/tree.cpp src/bst.cpp src/avl.cpp include/closed_hash_function.h include/closed_hash_table.h include/open_hash_function.h include/open_hash_table.h include/sort.h include/tree.h include/bst.h include/avl.h" # PA3
 )
 
 # declare a function that prints a message
