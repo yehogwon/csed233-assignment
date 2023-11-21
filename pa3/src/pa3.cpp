@@ -130,7 +130,7 @@ void task_2(ofstream &fout, InstructionSequence &instr_seq) {
         (If the key does not exist, do not delete any element)
 
     Input of BinearySearchTree::findNthMinimum
-        Key of the N-th minimum value to be deleted.
+        Key of the N-th minimum value to be found.
 
     Output of BinearySearchTree::findNthMinimum
         Return the -1 if there if no such N-th minimum value, N-th minimum value otherwise.
