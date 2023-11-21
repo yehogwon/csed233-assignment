@@ -75,6 +75,19 @@ void OpenHashTable::insert(int key) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
+    int hash_index = hf->openhashing(key);
+    if (states[hash_index] == OPEN_EMPTY) { // OPEN_EMPTY
+        table[hash_index] = new HashNode(key);
+        states[hash_index] = OPEN_OCCUPIED;
+    } else { // OPEN_OCCUPIED
+        HashNode* cur;
+        cur = table[hash_index];
+        while(cur->next != NULL){
+            cur = cur->next;
+        }
+        cur->next = new HashNode(key);
+    }
+
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
