@@ -1,0 +1,14 @@
+[('M',4), ('insertion',15),('insertion',2), ('insertion',3)]
+0: empty
+1: 2
+2: 15
+3: 3
+F: empty
+**** ****
+[('M',4), ('insertion',15),('insertion',46), ('insertion',81),('insertion',21), ('insertion',35),('insertion',7)]
+0: 46
+1: 81
+2: 15
+3: 21
+F: 35, 7
+**** ****
