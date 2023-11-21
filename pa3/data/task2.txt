@@ -1,3 +1,22 @@
+[('insertion',56),('insertion',42), ('insertion',20),('insertion',17), ('insertion',13),('insertion',28), ('insertion',14),('mergeSort',NULL)]
+56 42 20 17 13 28 14
+42 56 17 20 13 28 14
+17 20 42 56 13 14 28
+13 14 17 20 28 42 56
+**** ****
+[('insertion',6), ('insertion',5),('insertion',4), ('insertion',3),('insertion',2), ('insertion',1),('mergeSort',NULL)]
+6 5 4 3 2 1
+5 6 3 4 1 2
+3 4 5 6 1 2
+1 2 3 4 5 6
+**** ****
+[('insertion',36),('insertion',20), ('insertion',17),('insertion',13), ('insertion',28),('insertion',14), ('insertion',23),('insertion',15), ('insertion',32),('mergeSort',NULL)]
+36 20 17 13 28 14 23 15 32
+20 36 13 17 14 28 15 23 32
+13 17 20 36 14 15 23 28 32
+13 14 15 17 20 23 28 36 32
+13 14 15 17 20 23 28 32 36
+**** ****
 [('insertion', 79),('insertion', 17),('mergeSort', NULL)]
 79 17
 17 79
