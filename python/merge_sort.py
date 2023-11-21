@@ -56,7 +56,7 @@ def main(args: argparse.Namespace) -> None:
                 '\n'.join(process_list)
             )
         )
-    print((f'\n{CASE_SEP}\n').join([f'{tup[0]}\n{tup[1]}' for tup in cases]))
+    print((f'\n{CASE_SEP}\n').join([f'[{tup[0]}]\n{tup[1]}' for tup in cases]))
     print(CASE_SEP)
 
 if __name__ == '__main__': 
