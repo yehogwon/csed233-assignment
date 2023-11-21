@@ -361,6 +361,7 @@ void task_6(ofstream &fout, InstructionSequence &instr_seq) {
     }
 }
 
+#ifndef DOING_CTEST // SUBMIT: REMOVE THIS LINE
 int main(int argc, char **argv) {
     string filename = "submit.txt";
     int task_num = 0;
@@ -433,3 +434,4 @@ int main(int argc, char **argv) {
     fout.close();
     return 0;
 }
+#endif // SUBMIT: REMOVE THIS LINE

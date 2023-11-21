@@ -21,6 +21,20 @@ void sortAlg::printArray(ofstream &fout) {
 void sortAlg::insertionSort(ofstream &fout) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+
+    int i = 1;
+    for (int i = 1; i < arr_size; i++) {
+        int j = i;
+        bool no = true;
+        while (j > 0 && arr[j] < arr[j - 1]) {
+            std::swap(arr[j], arr[j - 1]);
+            no = false;
+            j--;
+        }
+        if (!no) {
+            printArray(fout);
+        }
+    }
   
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////

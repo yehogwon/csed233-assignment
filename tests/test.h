@@ -163,14 +163,16 @@ int test_iteration_0_args(const function_no_args fn, const std::string &prefix, 
 }
 
 template <typename T>
-int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix, std::ifstream &answer_in, function_parse_input<T> parse_input, const bool nothing_for_empty=false) {
+int test_iteration_1_args(const function_1_args<T> fn, const std::string &prefix, std::ifstream &answer_in, function_parse_input<T> parse_input, const bool nothing_for_empty=false, const bool prefix_every_line=true) {
     std::string input, answer, tmp;
     while (std::getline(answer_in, input)) {
         answer = "";
         while (std::getline(answer_in, tmp) && tmp != CASE_SEP) {
             strip(tmp);
-            answer += prefix + tmp;
+            if (prefix_every_line) answer += prefix;
+            answer += tmp;
         }
+        if (!prefix_every_line) answer = prefix + answer;
         if (nothing_for_empty && answer == prefix) answer = ""; // `nothing_for_empty` is True when the task does not print even [Task #] when that is the only line to print. 
         strip(input);
         std::pair<T, std::string> test_case = {
