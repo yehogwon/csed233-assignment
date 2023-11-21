@@ -1,6 +1,6 @@
 from typing import TypeVar, Generic, Optional, List
 import argparse
-from random import choices, randint
+from random import choices, randint, random
 
 CASE_SEP = '**** ****'
 
@@ -104,8 +104,8 @@ class BST(Generic[T]):
 def nth_smallest(bst: BST[T], n: int) -> Optional[T]:
     if n > len(bst): 
         return None
-    pre_ = preorder(bst)
-    return pre_[n-1]
+    in_ = inorder(bst)
+    return in_[n - 1]
 
 def _preorder(bst_node: BSTNode[T]) -> List[T]: 
     if not bst_node:
@@ -126,7 +126,7 @@ def inorder(bst: BST[T]) -> List[T]:
 INSTRUCTION_PROB = {
     'insertion': 0.45, 
     'deletion': 0.35, 
-    'nth_smallest': 0.2
+    'findNthMinimum': 0.2
 }
 
 def gen_instruction(): 
@@ -141,23 +141,27 @@ def main(args: argparse.Namespace) -> None:
     for _ in range(args.N): 
         bst = BST()
         instructions = []
+        inserted_values = []
         outputs = []
         for _ in range(randint(args.min, args.max)): 
             instruction = gen_instruction()
             value = randint(1, 99)
-            nth = randint(0, int(len(bst) * 1.5)) + 1
             if instruction == 'insertion': 
                 if bst.insert(value): 
+                    inserted_values.append(value)
                     outputs.append(0)
                 else:
                     outputs.append(-1)
             elif instruction == 'deletion':
+                if len(inserted_values) > 0 and random() < 0.5: 
+                    value = choices(inserted_values, k=1)[0]
                 if bst.delete(value): 
                     outputs.append(0)
                 else: 
                     outputs.append(-1)
             else:
-                nth_min = nth_smallest(bst, nth)
+                value = randint(0, int(len(bst) * 1.5)) + 1
+                nth_min = nth_smallest(bst, value)
                 if nth_min is None: 
                     outputs.append(-1)
                 else:
