@@ -1,0 +1,30 @@
+[('insertion',4), ('insertion',6),('insertion',6), ('insertion',7),('deletion',7)]
+0
+0
+-1
+0
+0
+4 6
+4 6
+**** ****
+[('insertion',4), ('insertion',2),('findNthMinimum', 1), ('insertion',10),('insertion',9), ('insertion',15),('insertion',1), ('deletion',1),('deletion',4), ('deletion',10),('findNthMinimum', 5)]
+0
+0
+2
+0
+0
+0
+0
+0
+0
+0
+-1
+9 2 15
+2 9 15
+**** ****
+[('deletion', 3),('insertion',10),('deletion', 10),('findNthMinimum',2)]
+-1
+0
+0
+-1
+**** ****

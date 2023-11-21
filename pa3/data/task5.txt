@@ -1,0 +1,15 @@
+[('M',4), ('insertion',32615),('insertion',315), ('insertion',6468),('insertion',94833)]
+0: 6468
+1: 94833
+2: empty
+3: 32615, 315
+**** ****
+[('M',7), ('insertion',32615),('insertion',315), ('insertion',6468),('insertion',94833), ('insertion',22)]
+0: 315, 6468
+1: 22
+2: 32615
+3: empty
+4: 94833
+5: empty
+6: empty
+**** ****

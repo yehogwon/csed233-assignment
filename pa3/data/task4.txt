@@ -1,0 +1,21 @@
+[('insertion',4), ('insertion',6),('insertion',0), ('deletion',7)]
+OK
+OK
+OK
+Fail
+4 0 6
+0 4 6
+**** ****
+[('insertion',4), ('insertion',2),('insertion',10), ('insertion',9),('insertion',15), ('insertion',5),('insertion',0), ('deletion',4),('insertion',10)]
+OK
+OK
+OK
+OK
+OK
+RL
+OK
+OK
+Fail
+9 2 0 5 10 15
+0 2 5 9 10 15
+**** ****
