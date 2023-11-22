@@ -62,6 +62,16 @@ void ClosedHashTable::print_table(ostream &out) {
 void ClosedHashTable::insert(int key) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+
+    int attempts = 0;
+    while (attempts < table_size && states[hf->closedhashing(key, attempts)] == CLOSED_OCCUPIED)
+        attempts++;
+    if (attempts == table_size) {
+        flist.add(key);
+    } else {
+        table[hf->closedhashing(key, attempts)] = key;
+        states[hf->closedhashing(key, attempts)] = CLOSED_OCCUPIED;
+    }
     
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
