@@ -3,6 +3,9 @@ from random import randint, choices, random
 
 CASE_SEP = '**** ****'
 
+MIN_VAL = 1
+MAX_VAL = 30
+
 def insertion_sort(l: list) -> list[str]: 
     l = l.copy()
     process: list[str] = []
@@ -27,7 +30,7 @@ def main(args: argparse.Namespace) -> None:
         length = randint(args.min_length, args.max_length)
         org = []
         for _ in range(length): 
-            org.append(randint(1, 99))
+            org.append(randint(MIN_VAL, MAX_VAL))
         process_list = insertion_sort(org)
 
         inputs = [f"('insertion', {elem})" for elem in org]
