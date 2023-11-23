@@ -2,7 +2,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <cmath>
 
 sortAlg::sortAlg() {
     arr_size = 0;
