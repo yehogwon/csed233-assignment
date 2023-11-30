@@ -22,6 +22,15 @@
 9 2 15
 2 9 15
 **** ****
+[('insertion',12), ('insertion',17), ('insertion',14), ('insertion',16), ('deletion', 12)]
+0
+0
+0
+0
+0
+17 14 16
+14 16 17
+**** ****
 [('deletion', 3),('insertion',10),('deletion', 10),('findNthMinimum',2)]
 -1
 0
