@@ -68,6 +68,56 @@ Node* AVLTree::rebalance(Node *pivot, std::string &result) {
     return pivot;
 }
 
+Node* AVLTree::_deletion(int key) {
+    if (_root == NULL) {
+        return NULL;
+    }
+
+    Node *cur = _root;
+    Node *parent = NULL;
+    while (cur != NULL) {
+        if (key < cur->key) {
+            parent = cur;
+            cur = cur->left;
+        } else if (key > cur->key) {
+            parent = cur;
+            cur = cur->right;
+        } else {
+            break;
+        }
+    }
+
+    if (cur == NULL) {
+        return NULL;
+    }
+
+    if (cur->left != NULL && cur->right != NULL) { // deg 2
+        Node *succ = cur->right;
+        Node *succ_parent = cur;
+        while (succ->left != NULL) {
+            succ_parent = succ;
+            succ = succ->left;
+        }
+        cur->key = succ->key;
+        if (succ_parent->left == succ) succ_parent->left = succ->right;
+        else succ_parent->right = succ->right;
+    } else if (cur->left != NULL) { // deg 1
+        if (parent == NULL) _root = cur->left;
+        else if (parent->left == cur) parent->left = cur->left;
+        else parent->right = cur->left;
+    } else if (cur->right != NULL) { // deg 1
+        if (parent == NULL) _root = cur->right;
+        else if (parent->left == cur) parent->left = cur->right;
+        else parent->right = cur->right;
+    } else { // deg 0
+        if (parent == NULL) _root = NULL;
+        else if (parent->left == cur) parent->left = NULL;
+        else parent->right = NULL;
+    }
+    
+    return cur;
+}
+
 ///////////      End of Implementation      /////////////
 ///////////////////////////////////////////////////////
 
@@ -110,11 +160,35 @@ string AVLTree::deletion(int key)
     //////////  TODO: Implement From Here      //////////////
 
     string result = "DS";
-    if (!BinarySearchTree::deletion(key)) {
-        // TODO: rebalance for deletion
-        result = "OK";
-    } else {
+
+    Node *parent = _deletion(key);
+    if (parent == NULL) { 
         result = "Fail";
+    } else {
+        Node *deepest_parent = NULL;
+        Node *deepest = _root;
+        while (deepest != NULL) {
+            int bf = getBalanceFactor(deepest);
+            if (bf < -1 || bf > 1) break;
+
+            if (key < deepest->key) {
+                deepest_parent = deepest;
+                deepest = deepest->left;
+            } else if (key > deepest->key) {
+                deepest_parent = deepest;
+                deepest = deepest->right;
+            } else {
+                break;
+            }
+        }
+
+        if (deepest != NULL) {
+            if (deepest_parent == NULL) _root = rebalance(deepest, result);
+            else if (deepest_parent->left == deepest) deepest_parent->left = rebalance(deepest, result);
+            else deepest_parent->right = rebalance(deepest, result);
+        }
+        
+        result = "OK";
     }
     return result;
 

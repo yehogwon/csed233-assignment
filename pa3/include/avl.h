@@ -23,6 +23,8 @@ private:
     Node* lr(Node *pivot);
 
     Node* rebalance(Node *pivot, std::string &result);
+
+    Node* _deletion(int key);
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 };
