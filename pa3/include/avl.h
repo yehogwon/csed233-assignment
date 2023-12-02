@@ -16,15 +16,12 @@ private:
     //////  TODO: Add private members if required ///////////
     int getHeight(Node *node);
     int getBalanceFactor(Node *node);
+    
+    Node *rightRotate(Node *pivot);
+    Node *leftRotate(Node *pivot);
 
-    Node* rr(Node *pivot);
-    Node* ll(Node *pivot);
-    Node* rl(Node *pivot);
-    Node* lr(Node *pivot);
-
-    Node* rebalance(Node *pivot, std::string &result);
-
-    Node* _deletion(int key);
+    Node* _insertion(Node *cur, int key, std::string &result);
+    Node* _deletion(Node *cur, int key, std::string &result);
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 };

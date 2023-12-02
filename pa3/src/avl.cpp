@@ -11,10 +11,7 @@ using namespace std;
 
 int AVLTree::getHeight(Node *node) {
     if (node == NULL) return 0;
-    
-    int leftHeight = getHeight(node->left);
-    int rightHeight = getHeight(node->right);
-    return (leftHeight > rightHeight) ? leftHeight + 1 : rightHeight + 1;
+    return node->height;
 }
 
 int AVLTree::getBalanceFactor(Node *node) {
@@ -22,99 +19,119 @@ int AVLTree::getBalanceFactor(Node *node) {
     return getHeight(node->left) - getHeight(node->right);
 }
 
-Node* AVLTree::rr(Node *pivot) {
-    Node *pivotRight = pivot->right;
-    pivot->right = pivotRight->left;
-    pivotRight->left = pivot;
-    return pivotRight;
-}
-
-Node* AVLTree::ll(Node *pivot) {
+Node* AVLTree::rightRotate(Node *pivot) {
     Node *pivotLeft = pivot->left;
     pivot->left = pivotLeft->right;
     pivotLeft->right = pivot;
+
+    pivot->height = std::max(getHeight(pivot->left), getHeight(pivot->right)) + 1;
+    pivotLeft->height = std::max(getHeight(pivotLeft->left), getHeight(pivotLeft->right)) + 1;
+
     return pivotLeft;
 }
 
-Node* AVLTree::rl(Node *pivot) {
-    pivot->right = ll(pivot->right);
-    return rr(pivot);
+Node* AVLTree::leftRotate(Node *pivot) {
+    Node *pivotRight = pivot->right;
+    pivot->right = pivotRight->left;
+    pivotRight->left = pivot;
+
+    pivot->height = std::max(getHeight(pivot->left), getHeight(pivot->right)) + 1;
+    pivotRight->height = std::max(getHeight(pivotRight->left), getHeight(pivotRight->right)) + 1;
+
+    return pivotRight;
 }
 
-Node* AVLTree::lr(Node *pivot) {
-    pivot->left = rr(pivot->left);
-    return ll(pivot);
-}
-
-Node* AVLTree::rebalance(Node *pivot, std::string &result) {
-    int bf = getBalanceFactor(pivot);
-    if (bf < -1) {
-        if (getBalanceFactor(pivot->right) > 0) {
-            pivot = rl(pivot);
-            result = "RL";
-        } else {
-            pivot = rr(pivot);
-            result = "RR";
-        }
-    } else if (bf > 1) {
-        if (getBalanceFactor(pivot->left) < 0) {
-            pivot = lr(pivot);
-            result = "LR";
-        } else {
-            pivot = ll(pivot);
-            result = "LL";
-        }
-    }
-    return pivot;
-}
-
-Node* AVLTree::_deletion(int key) {
-    if (_root == NULL) {
-        return NULL;
-    }
-
-    Node *cur = _root;
-    Node *parent = NULL;
-    while (cur != NULL) {
-        if (key < cur->key) {
-            parent = cur;
-            cur = cur->left;
-        } else if (key > cur->key) {
-            parent = cur;
-            cur = cur->right;
-        } else {
-            break;
-        }
-    }
+Node* AVLTree::_insertion(Node *cur, int key, std::string &result) {
+    Node *n = new Node(key);
+    n->height = 1;
 
     if (cur == NULL) {
-        return NULL;
-    }
-
-    if (cur->left != NULL && cur->right != NULL) { // deg 2
-        Node *succ = cur->right;
-        Node *succ_parent = cur;
-        while (succ->left != NULL) {
-            succ_parent = succ;
-            succ = succ->left;
-        }
-        cur->key = succ->key;
-        if (succ_parent->left == succ) succ_parent->left = succ->right;
-        else succ_parent->right = succ->right;
-    } else if (cur->left != NULL) { // deg 1
-        if (parent == NULL) _root = cur->left;
-        else if (parent->left == cur) parent->left = cur->left;
-        else parent->right = cur->left;
-    } else if (cur->right != NULL) { // deg 1
-        if (parent == NULL) _root = cur->right;
-        else if (parent->left == cur) parent->left = cur->right;
-        else parent->right = cur->right;
-    } else { // deg 0
-        if (parent == NULL) _root = NULL;
-        else if (parent->left == cur) parent->left = NULL;
-        else parent->right = NULL;
+        result = "OK";
+        return n;
     }
     
+    if (key < cur->key) cur->left = _insertion(cur->left, key, result);
+    else if (key > cur->key) cur->right = _insertion(cur->right, key, result);
+    else {
+        result = "Fail";
+        throw "Duplicate key";
+    }
+
+    cur->height = std::max(getHeight(cur->left), getHeight(cur->right)) + 1;
+    int bf = getBalanceFactor(cur);
+
+    if (bf < -1) {
+        if (key > cur->right->key) {
+            result = "RR";
+            return leftRotate(cur);
+        } else {
+            result = "RL";
+            cur->right = rightRotate(cur->right);
+            return leftRotate(cur);
+        }
+    } else if (bf > 1) {
+        if (key < cur->left->key) {
+            result = "LL";
+            return rightRotate(cur);
+        } else {
+            result = "LR";
+            cur->left = leftRotate(cur->left);
+            return rightRotate(cur);
+        }
+    }
+
+    if (result == "DS") result = "OK";
+    return cur;
+}
+
+Node* AVLTree::_deletion(Node *cur, int key, std::string &result) {
+    if (cur == NULL) {
+        result = "Fail";
+        return cur;
+    }
+
+    if (key < cur->key) cur->left = _deletion(cur->left, key, result);
+    else if (key > cur->key) cur->right = _deletion(cur->right, key, result);
+    else {
+        if (cur->left == NULL || cur->right == NULL) {
+            Node *temp = cur->left ? cur->left : cur->right;
+            if (temp == NULL) {
+                temp = cur;
+                cur = NULL;
+            } else {
+                *cur = *temp;
+            }
+            delete temp;
+        } else {
+            Node *temp = cur->right;
+            while (temp->left != NULL) temp = temp->left;
+            cur->key = temp->key;
+            cur->right = _deletion(cur->right, temp->key, result);
+        }
+    }
+
+    if (cur == NULL) return cur;
+
+    cur->height = std::max(getHeight(cur->left), getHeight(cur->right)) + 1;
+    int bf = getBalanceFactor(cur);
+
+    if (bf < -1) {
+        if (getBalanceFactor(cur->right) <= 0) {
+            return leftRotate(cur);
+        } else {
+            cur->right = rightRotate(cur->right);
+            return leftRotate(cur);
+        }
+    } else if (bf > 1) {
+        if (getBalanceFactor(cur->left) >= 0) {
+            return rightRotate(cur);
+        } else {
+            cur->left = leftRotate(cur->left);
+            return rightRotate(cur);
+        }
+    }
+
+    if (result == "DS") result = "OK";
     return cur;
 }
 
@@ -127,27 +144,11 @@ string AVLTree::insertion(int key)
     //////////  TODO: Implement From Here      //////////////
 
     string result = "DS";
-    if (!BinarySearchTree::insertion(key)) {
-        Node *cur = _root;
-        while (cur != NULL) {
-            int bf = getBalanceFactor(cur);
-            if (bf < -1 || bf > 1) break;
-
-            if (key < cur->key) {
-                cur = cur->left;
-            } else if (key > cur->key) {
-                cur = cur->right;
-            } else {
-                break;
-            }
-        }
-
-        if (cur->key == key) result = "OK";
-        else _root = rebalance(cur, result);
-    } else {
+    try {
+        _root = _insertion(_root, key, result);
+    } catch (const char *msg) {
         result = "Fail";
     }
-
     return result;
 
     ///////////      End of Implementation      /////////////
@@ -160,36 +161,7 @@ string AVLTree::deletion(int key)
     //////////  TODO: Implement From Here      //////////////
 
     string result = "DS";
-
-    Node *parent = _deletion(key);
-    if (parent == NULL) { 
-        result = "Fail";
-    } else {
-        Node *deepest_parent = NULL;
-        Node *deepest = _root;
-        while (deepest != NULL) {
-            int bf = getBalanceFactor(deepest);
-            if (bf < -1 || bf > 1) break;
-
-            if (key < deepest->key) {
-                deepest_parent = deepest;
-                deepest = deepest->left;
-            } else if (key > deepest->key) {
-                deepest_parent = deepest;
-                deepest = deepest->right;
-            } else {
-                break;
-            }
-        }
-
-        if (deepest != NULL) {
-            if (deepest_parent == NULL) _root = rebalance(deepest, result);
-            else if (deepest_parent->left == deepest) deepest_parent->left = rebalance(deepest, result);
-            else deepest_parent->right = rebalance(deepest, result);
-        }
-        
-        result = "OK";
-    }
+    _root = _deletion(_root, key, result);
     return result;
 
     ///////////      End of Implementation      /////////////
