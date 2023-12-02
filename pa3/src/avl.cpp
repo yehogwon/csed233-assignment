@@ -93,6 +93,7 @@ Node* AVLTree::_deletion(Node *cur, int key, std::string &result) {
     if (key < cur->key) cur->left = _deletion(cur->left, key, result);
     else if (key > cur->key) cur->right = _deletion(cur->right, key, result);
     else {
+        result = "OK";
         if (cur->left == NULL || cur->right == NULL) {
             Node *temp = cur->left ? cur->left : cur->right;
             if (temp == NULL) {
@@ -131,7 +132,6 @@ Node* AVLTree::_deletion(Node *cur, int key, std::string &result) {
         }
     }
 
-    if (result == "DS") result = "OK";
     return cur;
 }
 
