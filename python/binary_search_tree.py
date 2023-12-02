@@ -4,6 +4,11 @@ from random import choices, randint, random
 
 CASE_SEP = '**** ****'
 
+__all__ = [
+    'BSTNode', 
+    'BST'
+]
+
 T = TypeVar('T')
 class BSTNode(Generic[T]): 
     def __init__(self, key: T, left: Optional['BSTNode[T]']=None, right: Optional['BSTNode[T]']=None) -> None:
@@ -98,13 +103,19 @@ class BST(Generic[T]):
         self.n_nodes -= 1
         return True
     
+    def preorder(self) -> List[T]:  
+        return _preorder(self.root)
+    
+    def inorder(self) -> List[T]:
+        return _inorder(self.root)
+    
     def __len__(self) -> int: 
         return self.n_nodes
 
 def nth_smallest(bst: BST[T], n: int) -> Optional[T]:
     if n > len(bst): 
         return None
-    in_ = inorder(bst)
+    in_ = bst.inorder()
     return in_[n - 1]
 
 def _preorder(bst_node: BSTNode[T]) -> List[T]: 
@@ -112,16 +123,10 @@ def _preorder(bst_node: BSTNode[T]) -> List[T]:
         return []
     return [bst_node.key] + _preorder(bst_node.left) + _preorder(bst_node.right)
 
-def preorder(bst: BST[T]) -> List[T]:
-    return _preorder(bst.root)
-
 def _inorder(bst_node: BSTNode[T]) -> List[T]:
     if not bst_node:
         return []
     return _inorder(bst_node.left) + [bst_node.key] + _inorder(bst_node.right)
-
-def inorder(bst: BST[T]) -> List[T]:
-    return _inorder(bst.root)
 
 INSTRUCTION_PROB = {
     'insertion': 0.45, 
@@ -167,8 +172,8 @@ def main(args: argparse.Namespace) -> None:
                 else:
                     outputs.append(nth_min)
             instructions.append(f"('{instruction}', {value})")
-        pre_ = [str(x) for x in preorder(bst)]
-        in_ = [str(x) for x in inorder(bst)]
+        pre_ = [str(x) for x in bst.preorder()]
+        in_ = [str(x) for x in bst.inorder()]
         if len(pre_) > 0: 
             outputs.append(' '.join(pre_))
         if len(in_) > 0:
