@@ -12,6 +12,8 @@ using namespace std;
 /////////////////////////////////////////////////////////
 ///  TODO: Add Your Struct or Functions if required /////
 
+int to_int(std::string vertex_name);
+
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
 
@@ -67,6 +69,9 @@ private:
       0,
   };
   string pa5_answer;
+
+  bool is_vertex(int vertex);
+  void dfs(int v, bool visited[V]); // update visited
 
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
