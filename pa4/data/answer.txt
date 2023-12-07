@@ -1,0 +1,24 @@
+[Task 1]
+1
+[Task 2]
+0
+[Task 3]
+Error
+2
+[Task 4]
+A B C 
+[Task 5]
+B 5
+C 3
+D 10
+[Task 6]
+A C 1
+B D 1
+C D 2
+D E 5
+9
+[Task 7]
+A C 1
+C D 2
+D E 5
+8
