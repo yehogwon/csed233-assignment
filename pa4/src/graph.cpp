@@ -165,7 +165,7 @@ int Graph::addDirectedEdge(string nodeA, string nodeB, int weight) {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
-  return 0;
+  directGraph[to_int(nodeA)][to_int(nodeB)] = weight;
   ///////////      End of Implementation      /////////////
   ///////////////////////////////////////////////////////
 }
@@ -173,6 +173,51 @@ int Graph::addDirectedEdge(string nodeA, string nodeB, int weight) {
 string Graph::dijkstra(string source, int budget, ofstream &fout) {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
+  
+  bool S[V] = {0};
+  int D[V];
+  for (int i = 0; i < V; i++) D[i] = INT_MAX;
+
+  int s = to_int(source);
+  D[s] = 0;
+
+  for (int i = 0; i < V; i++) {
+    if (i == s) continue;
+    if (directGraph[s][i] > 0)
+      D[i] = directGraph[s][i];
+  }
+
+  for (int i = 0; i < V; i++) {
+    if (i == s) continue;
+    
+    int min = INT_MAX;
+    int min_index = -1;
+    for (int j = 0; j < V; j++) {
+      if (!S[j] && D[j] < min) {
+        min = D[j];
+        min_index = j;
+      }
+    }
+
+    if (min_index == -1) break;
+    S[min_index] = true;
+
+    for (int j = 0; j < V; j++) {
+      if (!S[j] && directGraph[min_index][j] > 0 && D[min_index] + directGraph[min_index][j] < D[j]) {
+        D[j] = D[min_index] + directGraph[min_index][j];
+      }
+    }
+  }
+
+  pa5_answer = "";
+  for (int i = 0; i < V; i++) {
+    if (D[i] > 0 && D[i] < budget) {
+      pa5_answer += (char) (i + 'A');
+      pa5_answer += " " + std::to_string(D[i]) + "\n";
+    }
+  }
+
+  fout << pa5_answer;
 
   return pa5_answer;
   ///////////      End of Implementation      /////////////
