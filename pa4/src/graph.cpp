@@ -27,6 +27,13 @@ void Graph::dfs(int v, bool visited[V]) {
   }
 }
 
+bool Graph::reachable(int start, int end) {
+  if (start == end) return true;
+  bool visited[V] = {0};
+  dfs(start, visited);
+  return visited[end];
+}
+
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
 
@@ -93,6 +100,8 @@ int Graph::addDirectedEdge(string nodeA, string nodeB) {
   //////////  TODO: Implement From Here      //////////////
 
   edge[to_int(nodeA)][to_int(nodeB)] = 1;
+  exist[to_int(nodeA)] = 1;
+  exist[to_int(nodeB)] = 1;
   return 0;
 
   ///////////      End of Implementation      /////////////
@@ -123,7 +132,28 @@ string Graph::StrongConnectedComponents() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
-  return "";
+  std::string scc[V];
+  bool is_scc[V] = {0};
+
+  std::string result = "";
+  for (int i = 0; i < V; i++) {
+    if (!is_vertex(i) || is_scc[i]) continue;
+    
+    std::string cur = "";
+    for (int j = 0; j < V; j++) {
+      if (!is_vertex(j) || is_scc[j]) continue;
+      if (reachable(i, j) && reachable(j, i)) {
+        cur += (char)(j + 'A');
+        cur += " ";
+        is_scc[j] = true;
+      }
+    }
+    if (cur != "") {
+      result += cur;
+      result += "\n";
+    }
+  }
+  return result;
 
   ///////////      End of Implementation      /////////////
   ///////////////////////////////////////////////////////

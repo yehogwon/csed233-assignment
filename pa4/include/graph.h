@@ -72,6 +72,7 @@ private:
 
   bool is_vertex(int vertex);
   void dfs(int v, bool visited[V]); // update visited
+  bool reachable(int start, int end);
 
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
