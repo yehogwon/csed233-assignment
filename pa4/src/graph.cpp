@@ -191,6 +191,7 @@ int Graph::addDirectedEdge(string nodeA, string nodeB, int weight) {
   //////////  TODO: Implement From Here      //////////////
 
   directGraph[to_int(nodeA)][to_int(nodeB)] = weight;
+  return 0;
   ///////////      End of Implementation      /////////////
   ///////////////////////////////////////////////////////
 }
