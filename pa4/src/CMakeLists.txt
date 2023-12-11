@@ -18,3 +18,6 @@ add_executable(
     pa4.evaluate.out
     evaluate.cpp
 )
+
+target_compile_options(pa4.lib PRIVATE -Wno-macro-redefined)
+target_compile_options(pa4.out PRIVATE -Wno-macro-redefined)
