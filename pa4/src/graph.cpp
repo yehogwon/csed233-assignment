@@ -9,9 +9,34 @@ using namespace std;
 /////////////////////////////////////////////////////////
 //////////  TODO: Implement From Here      //////////////
 /*  Write your codes if you have additional functions  */
+  
+DisjointSets::DisjointSets() {
+  for (int i = 0; i < NodeMaxCount; i++) {
+    parent[i] = i;
+    rank[i] = 0;
+  }
+}
+
+int DisjointSets::find(int u) {
+  if (u == parent[u]) return u;
+  return parent[u] = find(parent[u]);
+}
+
+void DisjointSets::merge(int u, int v) {
+  u = find(u);
+  v = find(v);
+  if (u == v) return;
+  if (rank[u] > rank[v]) std::swap(u, v);
+  parent[u] = v;
+  if (rank[u] == rank[v]) rank[v]++;
+}
 
 int to_int(std::string vertex_name) {
   return vertex_name[0] - 'A';
+}
+
+char to_char(int vertex) {
+  return (char) (vertex + 'A');
 }
 
 bool Graph::is_vertex(int vertex) {
@@ -143,7 +168,7 @@ string Graph::StrongConnectedComponents() {
     for (int j = 0; j < V; j++) {
       if (!is_vertex(j) || is_scc[j]) continue;
       if (reachable(i, j) && reachable(j, i)) {
-        cur += (char)(j + 'A');
+        cur += to_char(j);
         cur += " ";
         is_scc[j] = true;
       }
@@ -212,7 +237,7 @@ string Graph::dijkstra(string source, int budget, ofstream &fout) {
   pa5_answer = "";
   for (int i = 0; i < V; i++) {
     if (D[i] > 0 && D[i] < budget) {
-      pa5_answer += (char) (i + 'A');
+      pa5_answer += to_char(i);
       pa5_answer += " " + std::to_string(D[i]) + "\n";
     }
   }
@@ -230,6 +255,10 @@ int Graph::addUndirectedEdge(string nodeA, string nodeB, int weight) {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
+  edge[to_int(nodeA)][to_int(nodeB)] = weight;
+  edge[to_int(nodeB)][to_int(nodeA)] = weight;
+  exist[to_int(nodeA)] = 1;
+  exist[to_int(nodeB)] = 1;
   return 0;
   ///////////      End of Implementation      /////////////
   ///////////////////////////////////////////////////////
@@ -238,6 +267,67 @@ int Graph::addUndirectedEdge(string nodeA, string nodeB, int weight) {
 int Graph::kruskalMST(ofstream &fout) {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
+  
+  int n_edges = 0;
+  int n_vertices = 0;
+  for (int i = 0; i < V; i++) {
+    if (is_vertex(i)) n_vertices++;
+  }
+  
+  for (int i = 0; i < V; i++) {
+    for (int j = 0; j < i; j++) { // ignore self-loop
+      if (edge[i][j] > 0) n_edges++;
+    }
+  }
+  
+  WeightedEdge edges[n_edges];
+  
+  int index = 0;
+  for (int i = 0; i < V; i++) {
+    for (int j = 0; j < i; j++) { // ignore self-loop
+      if (edge[i][j] > 0) {
+        edges[index++] = { i, j, edge[i][j] };
+      }
+    }
+  }
+
+  std::sort(edges, edges + n_edges, [](const WeightedEdge &a, const WeightedEdge &b) {
+    return a.weight < b.weight;
+  });
+
+  int n_mst_edges = 0;
+  int mst_weight = 0;
+
+  WeightedEdge mst_edges[n_vertices - 1];
+  index = 0;
+
+  DisjointSets ds;
+  for (int i = 0; i < n_edges; i++) {
+    int u = edges[i].src;
+    int v = edges[i].dest;
+    int set_u = ds.find(u);
+    int set_v = ds.find(v);
+    if (set_u != set_v) {
+      mst_edges[index] = edges[i];
+      if (mst_edges[index].src > mst_edges[index].dest)
+        std::swap(mst_edges[index].src, mst_edges[index].dest);
+      index++;
+
+      ds.merge(set_u, set_v);
+      n_mst_edges++;
+      mst_weight += edges[i].weight;
+    }
+  }
+
+  std::sort(mst_edges, mst_edges + n_mst_edges, [](const WeightedEdge &a, const WeightedEdge &b) {
+    return a.src < b.src;
+  });
+
+  for (int i = 0; i < n_mst_edges; i++) {
+    fout << to_char(mst_edges[i].src) << " " << to_char(mst_edges[i].dest) << " " << mst_edges[i].weight << std::endl;
+  }
+
+  return mst_weight;
 
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////

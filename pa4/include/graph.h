@@ -12,7 +12,21 @@ using namespace std;
 /////////////////////////////////////////////////////////
 ///  TODO: Add Your Struct or Functions if required /////
 
+struct DisjointSets {
+  int parent[NodeMaxCount];
+  int rank[NodeMaxCount];
+  
+  DisjointSets();
+  int find(int u);
+  void merge(int u, int v);
+};
+
+struct WeightedEdge {
+  int src, dest, weight;
+};
+
 int to_int(std::string vertex_name);
+char to_char(int vertex);
 
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
