@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
 
     // Scores
     if (argc == 1) {
-        int sample[8] = {2, 1, 2, 2, 2, 2, 2, 2};
+        int sample[7] = {2, 2, 2, 2, 3, 2, 2};
         scores.insert(scores.end(), sample, sample+8);
     } else {
         for (int i=1; i<argc; i++) {
