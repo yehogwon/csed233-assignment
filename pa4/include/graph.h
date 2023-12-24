@@ -12,7 +12,21 @@ using namespace std;
 /////////////////////////////////////////////////////////
 ///  TODO: Add Your Struct or Functions if required /////
 
+struct DisjointSets {
+  int parent[NodeMaxCount];
+  int rank[NodeMaxCount];
+  
+  DisjointSets();
+  int find(int u);
+  void merge(int u, int v);
+};
+
+struct WeightedEdge {
+  int src, dest, weight;
+};
+
 int to_int(std::string vertex_name);
+char to_char(int vertex);
 
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
@@ -68,11 +82,18 @@ private:
   int directGraph[26][26] = {
       0,
   };
+
+  int mst[26][26] = {
+      0,
+  };
+
   string pa5_answer;
 
   bool is_vertex(int vertex);
   void dfs(int v, bool visited[V]); // update visited
   bool reachable(int start, int end);
+  int runKruskal();
+  std::string dfs_mst(int s, int d, bool visited[V], std::string path);
 
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
