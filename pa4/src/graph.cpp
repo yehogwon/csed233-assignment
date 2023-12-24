@@ -174,6 +174,7 @@ string Graph::StrongConnectedComponents() {
       }
     }
     if (cur != "") {
+      // NOTE: sort cur
       result += cur;
       result += "\n";
     }
