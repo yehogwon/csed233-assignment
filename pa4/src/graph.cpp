@@ -59,6 +59,84 @@ bool Graph::reachable(int start, int end) {
   return visited[end];
 }
 
+int Graph::runKruskal() {
+  int n_edges = 0;
+  int n_vertices = 0;
+  for (int i = 0; i < V; i++) {
+    if (is_vertex(i)) n_vertices++;
+  }
+  
+  for (int i = 0; i < V; i++) {
+    for (int j = 0; j < i; j++) { // ignore self-loop
+      if (edge[i][j] > 0) n_edges++;
+    }
+  }
+  
+  WeightedEdge edges[n_edges];
+  
+  int index = 0;
+  for (int i = 0; i < V; i++) {
+    for (int j = 0; j < i; j++) { // ignore self-loop
+      if (edge[i][j] > 0) {
+        edges[index++] = { i, j, edge[i][j] };
+      }
+    }
+  }
+
+  std::sort(edges, edges + n_edges, [](const WeightedEdge &a, const WeightedEdge &b) {
+    return a.weight < b.weight;
+  });
+
+  int n_mst_edges = 0;
+  int mst_weight = 0;
+
+  WeightedEdge mst_edges[n_vertices - 1];
+  index = 0;
+
+  DisjointSets ds;
+  for (int i = 0; i < n_edges; i++) {
+    int u = edges[i].src;
+    int v = edges[i].dest;
+    int set_u = ds.find(u);
+    int set_v = ds.find(v);
+    if (set_u != set_v) {
+      mst_edges[index] = edges[i];
+      if (mst_edges[index].src > mst_edges[index].dest)
+        std::swap(mst_edges[index].src, mst_edges[index].dest);
+      index++;
+
+      ds.merge(set_u, set_v);
+      n_mst_edges++;
+      mst_weight += edges[i].weight;
+    }
+  }
+
+  std::sort(mst_edges, mst_edges + n_mst_edges, [](const WeightedEdge &a, const WeightedEdge &b) {
+    return a.src < b.src;
+  });
+
+  for (int i = 0; i < n_mst_edges; i++) {
+    int s = mst_edges[i].src, d = mst_edges[i].dest, w = mst_edges[i].weight;
+    mst[s][d] = mst[d][s] = w;
+  }
+
+  return mst_weight;
+}
+
+std::string Graph::dfs_mst(int s, int d, bool visited[V], std::string path) {
+  visited[s] = true;
+  path += to_char(s);
+  path += " ";
+  if (s == d) return path;
+  for (int i = 0; i < V; i++) {
+    if (mst[s][i] > 0 && !visited[i]) {
+      std::string result = dfs_mst(i, d, visited, path);
+      if (result != "") return result;
+    }
+  }
+  return "";
+}
+
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
 
@@ -269,64 +347,15 @@ int Graph::addUndirectedEdge(string nodeA, string nodeB, int weight) {
 int Graph::kruskalMST(ofstream &fout) {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
-  
-  int n_edges = 0;
-  int n_vertices = 0;
+
+  int mst_weight = runKruskal();
+
   for (int i = 0; i < V; i++) {
-    if (is_vertex(i)) n_vertices++;
-  }
-  
-  for (int i = 0; i < V; i++) {
-    for (int j = 0; j < i; j++) { // ignore self-loop
-      if (edge[i][j] > 0) n_edges++;
-    }
-  }
-  
-  WeightedEdge edges[n_edges];
-  
-  int index = 0;
-  for (int i = 0; i < V; i++) {
-    for (int j = 0; j < i; j++) { // ignore self-loop
-      if (edge[i][j] > 0) {
-        edges[index++] = { i, j, edge[i][j] };
+    for (int j = i + 1; j < V; j++) { // ignore self-loop
+      if (mst[i][j] > 0) {
+        fout << to_char(i) << " " << to_char(j) << " " << mst[i][j] << std::endl;
       }
     }
-  }
-
-  std::sort(edges, edges + n_edges, [](const WeightedEdge &a, const WeightedEdge &b) {
-    return a.weight < b.weight;
-  });
-
-  int n_mst_edges = 0;
-  int mst_weight = 0;
-
-  WeightedEdge mst_edges[n_vertices - 1];
-  index = 0;
-
-  DisjointSets ds;
-  for (int i = 0; i < n_edges; i++) {
-    int u = edges[i].src;
-    int v = edges[i].dest;
-    int set_u = ds.find(u);
-    int set_v = ds.find(v);
-    if (set_u != set_v) {
-      mst_edges[index] = edges[i];
-      if (mst_edges[index].src > mst_edges[index].dest)
-        std::swap(mst_edges[index].src, mst_edges[index].dest);
-      index++;
-
-      ds.merge(set_u, set_v);
-      n_mst_edges++;
-      mst_weight += edges[i].weight;
-    }
-  }
-
-  std::sort(mst_edges, mst_edges + n_mst_edges, [](const WeightedEdge &a, const WeightedEdge &b) {
-    return a.src < b.src;
-  });
-
-  for (int i = 0; i < n_mst_edges; i++) {
-    fout << to_char(mst_edges[i].src) << " " << to_char(mst_edges[i].dest) << " " << mst_edges[i].weight << std::endl;
   }
 
   return mst_weight;
@@ -338,7 +367,29 @@ int Graph::kruskalMST(ofstream &fout) {
 void Graph::findMinCostPath(string start, string end, ofstream &fout) {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
-  return;
+
+  runKruskal();
+  int s = to_int(start);
+  int e = to_int(end);
+  
+  bool visited[V] = {0};
+  std::string path = "";
+  std::string result = dfs_mst(s, e, visited, path);
+  
+  int sum = 0;
+  for (int i = 0; i < result.length() - 2; i++) {
+    if (result[i] == ' ') continue;
+    char cur_c = result[i];
+    char next_c = result[i + 2];
+    int cur = to_int(std::string() + cur_c);
+    int next = to_int(std::string() + next_c);
+    int weight = mst[cur][next];
+    sum += weight;
+    fout << cur_c << " " << next_c << " " << weight << std::endl;
+  }
+
+  fout << sum << std::endl;
+
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
 }

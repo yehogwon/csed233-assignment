@@ -82,11 +82,18 @@ private:
   int directGraph[26][26] = {
       0,
   };
+
+  int mst[26][26] = {
+      0,
+  };
+
   string pa5_answer;
 
   bool is_vertex(int vertex);
   void dfs(int v, bool visited[V]); // update visited
   bool reachable(int start, int end);
+  int runKruskal();
+  std::string dfs_mst(int s, int d, bool visited[V], std::string path);
 
   ///////////      End of Implementation      /////////////
   /////////////////////////////////////////////////////////
