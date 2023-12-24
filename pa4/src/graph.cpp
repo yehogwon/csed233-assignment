@@ -60,6 +60,9 @@ bool Graph::reachable(int start, int end) {
 }
 
 int Graph::runKruskal() {
+  // initialize the array `mst`
+  for (int i = 0; i < V; i++) for (int j = 0; j < V; j++) mst[i][j] = 0;
+
   int n_edges = 0;
   int n_vertices = 0;
   for (int i = 0; i < V; i++) {
