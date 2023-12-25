@@ -90,7 +90,6 @@ bool Graph::reachable(int start, int end) {
 }
 
 int Graph::runKruskal() {
-  std::cout << "HERE" << std::endl;
   for (int i = 0; i < V; i++) for (int j = 0; j < V; j++) mst[i][j] = 0;
 
   int n_edges = 0;
