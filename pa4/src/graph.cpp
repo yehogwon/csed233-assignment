@@ -66,6 +66,22 @@ void Graph::dfs(int v, bool visited[V]) {
   }
 }
 
+void Graph::cycle_dfs(int v, bool visited[V], bool recStack[V], int &cycles) {
+  visited[v] = true;
+  recStack[v] = true;
+  for (int i = 0; i < V; i++) {
+    if (!is_vertex(i)) continue;
+    if (edge[v][i] == 1) {
+      if (!visited[i]) {
+        cycle_dfs(i, visited, recStack, cycles);
+      } else if (recStack[i]) {
+        cycles++;
+      }
+    }
+  }
+  recStack[v] = false;
+}
+
 bool Graph::reachable(int start, int end) {
   if (start == end) return true;
   bool visited[V] = {0};
@@ -152,19 +168,6 @@ std::string Graph::dfs_mst(int s, int d, bool visited[V], std::string path) {
     }
   }
   return "";
-}
-
-void Graph::adj_power(int n) {
-  // compute the n-th power of the adjacency matrix `edge`
-  int tmp[V][V] = {0};
-  for (int i = 0; i < V; i++) {
-    for (int j = 0; j < V; j++) { // ignore self-loop
-      for (int k = 0; k < V; k++) {
-        tmp[i][j] += edge[i][k] * edge[k][j];
-      }
-    }
-  }
-  for (int i = 0; i < V; i++) for (int j = 0; j < V; j++) edge[i][j] = tmp[i][j];
 }
 
 ///////////      End of Implementation      /////////////
@@ -256,7 +259,17 @@ string Graph::getTopologicalSort() {
   }
   
   std::string scc = StrongConnectedComponents();
-  if (scc != "") return "Error"; // cycle detected
+  int scc_count = 0;
+  for (int i = 0; i < scc.length(); i++) {
+    if (scc[i] == '\n') scc_count++;
+  }
+
+  int v_count = 0;
+  for (int i = 0; i < V; i++) {
+    if (is_vertex(i)) v_count++;
+  }
+
+  if (scc_count < v_count) return "Error"; // cycle detected
 
   PriorityQueue pq;
   int s_count = 0;
@@ -296,7 +309,18 @@ int Graph::countDirectedCycle() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
   
-  return 0;
+  int n_cycles = 0;
+  
+  bool visited[V] = {0};
+  bool recStack[V] = {0};
+  for (int i = 0; i < V; i++) {
+    if (!is_vertex(i)) continue;
+    if (!visited[i]) {
+      cycle_dfs(i, visited, recStack, n_cycles);
+    }
+  }
+
+  return n_cycles;
 
   ///////////      End of Implementation      /////////////
   ///////////////////////////////////////////////////////
@@ -306,10 +330,9 @@ string Graph::StrongConnectedComponents() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
-  std::string scc[V];
   bool is_scc[V] = {0};
-
   std::string result = "";
+  
   for (int i = 0; i < V; i++) {
     if (!is_vertex(i) || is_scc[i]) continue;
     

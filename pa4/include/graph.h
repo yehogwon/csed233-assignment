@@ -100,7 +100,7 @@ private:
 
   bool is_vertex(int vertex);
   void dfs(int v, bool visited[V]); // update visited
-  void adj_power(int n);
+  void cycle_dfs(int v, bool visited[V], bool recStack[V], int &cycles);
   bool reachable(int start, int end);
   int runKruskal();
   std::string dfs_mst(int s, int d, bool visited[V], std::string path);
