@@ -56,7 +56,7 @@ def main(args: argparse.Namespace) -> None:
         for _ in range(length): 
             s, d = -1, -1
             _attempts = 0
-            while s == d or (s, d) in pairs:
+            while s == d or (s, d) in pairs or (d, s) in pairs: 
                 if _attempts > 1000:
                     break
                 s, d = randint(0, v - 1), randint(0, v - 1)
