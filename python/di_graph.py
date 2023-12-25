@@ -15,6 +15,9 @@ class DirectedGraph:
     def is_vertex(self, v: int) -> bool:
         return 1 in self.adj_matrix[v] or 1 in [self.adj_matrix[i][v] for i in range(V)]
     
+    def n_vertices(self) -> int:
+        return sum([1 for v in range(V) if self.is_vertex(v)])
+    
     def add_edge(self, v: int, w: int) -> None:
         self.adj_matrix[v][w] = 1
 
@@ -30,6 +33,15 @@ class DirectedGraph:
         sccs = [sorted(scc) for scc in sccs]
         sccs.sort()
         return sccs
+    
+    def topo_sort(self) -> list[int]:
+        g = nx.DiGraph(np.array(self.adj_matrix))
+        topo_sort = list(nx.lexicographical_topological_sort(g))
+        return [v for v in topo_sort if self.is_vertex(v)]
+    
+    def count_cycles(self) -> int:
+        g = nx.DiGraph(np.array(self.adj_matrix))
+        return len(list(edges for edges in nx.recursive_simple_cycles(g) if len(edges) >= 3))
 
 def to_char(v: int) -> str:
     return chr(ord('A') + v)
@@ -54,7 +66,11 @@ def main(args: argparse.Namespace) -> None:
             pairs.append((s, d))
             g.add_edge(s, d)
         if args.mode == 'tpsort': 
-            answer = str(g.connected_components())
+            if len(g.strongly_connected_components()) < g.n_vertices(): # has cycle
+                answer = f'Error\n{g.count_cycles()}'
+                continue
+            else:
+                answer = ' '.join([to_char(v) for v in g.topo_sort()])
         elif args.mode == 'scc':
             sccs = g.strongly_connected_components()
             answer = '\n'.join([' '.join([to_char(v) for v in scc]) for scc in sccs])
