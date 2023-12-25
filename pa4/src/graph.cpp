@@ -31,6 +31,20 @@ void DisjointSets::merge(int u, int v) {
   if (rank[u] == rank[v]) rank[v]++;
 }
 
+PriorityQueue::PriorityQueue() {
+  size = 0;
+}
+
+void PriorityQueue::push(int u) {
+  arr[size++] = u;
+  std::sort(arr, arr + size, [](const int &a, const int &b) {
+    return a > b;
+  });
+}
+int PriorityQueue::pop() {
+  return arr[--size];
+}
+
 int to_int(std::string vertex_name) {
   return vertex_name[0] - 'A';
 }
@@ -140,6 +154,19 @@ std::string Graph::dfs_mst(int s, int d, bool visited[V], std::string path) {
   return "";
 }
 
+void Graph::adj_power(int n) {
+  // compute the n-th power of the adjacency matrix `edge`
+  int tmp[V][V] = {0};
+  for (int i = 0; i < V; i++) {
+    for (int j = 0; j < V; j++) { // ignore self-loop
+      for (int k = 0; k < V; k++) {
+        tmp[i][j] += edge[i][k] * edge[k][j];
+      }
+    }
+  }
+  for (int i = 0; i < V; i++) for (int j = 0; j < V; j++) edge[i][j] = tmp[i][j];
+}
+
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
 
@@ -181,10 +208,11 @@ int Graph::countBridge() {
   //////////  TODO: Implement From Here      //////////////
 
   int n_bridges = 0;
+  int prev = countConnectedComponents();
   for (int i = 0; i < V; i++) {
     for (int j = 0; j < i; j++) { // assume that there is no self-loop
       if (edge[i][j] == 1) {
-        int prev = countConnectedComponents();
+        // remove the edge
         edge[i][j] = 0;
         edge[j][i] = 0;
         int after = countConnectedComponents();
@@ -217,8 +245,48 @@ int Graph::addDirectedEdge(string nodeA, string nodeB) {
 string Graph::getTopologicalSort() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
+  
+  int in_degeee[V] = {0};
+  for (int i = 0; i < V; i++) {
+    if (!is_vertex(i)) continue;
+    for (int j = 0; j < V; j++) {
+      if (!is_vertex(j)) continue;
+      if (edge[i][j] == 1) in_degeee[j]++;
+    }
+  }
+  
+  std::string scc = StrongConnectedComponents();
+  if (scc != "") return "Error"; // cycle detected
 
-  return "";
+  PriorityQueue pq;
+  int s_count = 0;
+  for (int i = 0; i < V; i++) {
+    if (!is_vertex(i)) continue;
+    if (in_degeee[i] == 0) {
+      pq.push(i);
+      s_count++;
+    }
+  }
+  
+  std::cout << s_count << std::endl;
+  if (s_count == 0) return "Error"; // cycle detected
+
+  std::string result = "";
+  
+  while (pq.size > 0) {
+    int cur = pq.pop();
+    result += to_char(cur);
+    result += " ";
+    for (int i = 0; i < V; i++) {
+      if (!is_vertex(i)) continue;
+      if (edge[cur][i] == 1) {
+        in_degeee[i]--;
+        if (in_degeee[i] == 0) pq.push(i);
+      }
+    }
+  }
+
+  return result;
 
   ///////////      End of Implementation      /////////////
   ///////////////////////////////////////////////////////
@@ -227,7 +295,7 @@ string Graph::getTopologicalSort() {
 int Graph::countDirectedCycle() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
-
+  
   return 0;
 
   ///////////      End of Implementation      /////////////
@@ -255,7 +323,6 @@ string Graph::StrongConnectedComponents() {
       }
     }
     if (cur != "") {
-      // NOTE: sort cur
       result += cur;
       result += "\n";
     }
