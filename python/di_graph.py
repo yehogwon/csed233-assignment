@@ -1,5 +1,8 @@
 import argparse
 from random import randint, choices, random
+import networkx as nx
+import numpy as np
+from tqdm import tqdm
 
 CASE_SEP = '**** ****'
 
@@ -18,14 +21,25 @@ class DirectedGraph:
     def remove_edge(self, v: int, w: int) -> None:
         self.adj_matrix[v][w] = 0
 
+    def strongly_connected_components(self) -> list[list]: 
+        g = nx.DiGraph(np.array(self.adj_matrix))
+        sccs = list(nx.strongly_connected_components(g))
+        for i in range(len(sccs)): 
+            sccs[i] = [v for v in list(sccs[i]) if self.is_vertex(v)]
+        sccs = [scc for scc in sccs if len(scc) > 0]
+        sccs = [sorted(scc) for scc in sccs]
+        sccs.sort()
+        return sccs
+
 def to_char(v: int) -> str:
     return chr(ord('A') + v)
 
 def main(args: argparse.Namespace) -> None:
     cases = []
-    for _ in range(args.N):
+    for _ in tqdm(range(args.N)):
         length = randint(args.min_length, args.max_length)
         pairs = []
+        v = randint(args.min_V, args.max_V)
         g = DirectedGraph()
         for _ in range(length): 
             s, d = -1, -1
@@ -33,16 +47,17 @@ def main(args: argparse.Namespace) -> None:
             while s == d or (s, d) in pairs:
                 if _attempts > 1000:
                     break
-                s, d = randint(0, V - 1), randint(0, V - 1)
+                s, d = randint(0, v - 1), randint(0, v - 1)
                 _attempts += 1
             if _attempts > 1000:
                 continue
             pairs.append((s, d))
             g.add_edge(s, d)
-        if args.mode == 'cc': 
+        if args.mode == 'tpsort': 
             answer = str(g.connected_components())
-        elif args.mode == 'brdg':
-            answer = str(g.bridges())
+        elif args.mode == 'scc':
+            sccs = g.strongly_connected_components()
+            answer = '\n'.join([' '.join([to_char(v) for v in scc]) for scc in sccs])
 
         cases.append(
             (
@@ -59,5 +74,7 @@ if __name__ == '__main__':
     parser.add_argument('-N', type=int, required=True, help='The number of samples to generate')
     parser.add_argument('--min_length', type=int, required=True, help='The minimum length of the instruction')
     parser.add_argument('--max_length', type=int, required=True, help='The maximum length of the instruction')
+    parser.add_argument('--min_V', type=int, required=True, help='The minimum value of vertices')
+    parser.add_argument('--max_V', type=int, required=True, help='The maximum value of vertices')
     args = parser.parse_args()
     main(args)
