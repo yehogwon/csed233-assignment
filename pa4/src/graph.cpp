@@ -31,6 +31,20 @@ void DisjointSets::merge(int u, int v) {
   if (rank[u] == rank[v]) rank[v]++;
 }
 
+PriorityQueue::PriorityQueue() {
+  size = 0;
+}
+
+void PriorityQueue::push(int u) {
+  arr[size++] = u;
+  std::sort(arr, arr + size, [](const int &a, const int &b) {
+    return a > b;
+  });
+}
+int PriorityQueue::pop() {
+  return arr[--size];
+}
+
 int to_int(std::string vertex_name) {
   return vertex_name[0] - 'A';
 }
@@ -52,6 +66,22 @@ void Graph::dfs(int v, bool visited[V]) {
   }
 }
 
+void Graph::cycle_dfs(int v, bool visited[V], bool recStack[V], int &cycles) {
+  visited[v] = true;
+  recStack[v] = true;
+  for (int i = 0; i < V; i++) {
+    if (!is_vertex(i)) continue;
+    if (edge[v][i] == 1) {
+      if (!visited[i]) {
+        cycle_dfs(i, visited, recStack, cycles);
+      } else if (recStack[i]) {
+        cycles++;
+      }
+    }
+  }
+  recStack[v] = false;
+}
+
 bool Graph::reachable(int start, int end) {
   if (start == end) return true;
   bool visited[V] = {0};
@@ -60,6 +90,9 @@ bool Graph::reachable(int start, int end) {
 }
 
 int Graph::runKruskal() {
+  // initialize the array `mst`
+  for (int i = 0; i < V; i++) for (int j = 0; j < V; j++) mst[i][j] = 0;
+
   int n_edges = 0;
   int n_vertices = 0;
   for (int i = 0; i < V; i++) {
@@ -178,10 +211,11 @@ int Graph::countBridge() {
   //////////  TODO: Implement From Here      //////////////
 
   int n_bridges = 0;
+  int prev = countConnectedComponents();
   for (int i = 0; i < V; i++) {
     for (int j = 0; j < i; j++) { // assume that there is no self-loop
       if (edge[i][j] == 1) {
-        int prev = countConnectedComponents();
+        // remove the edge
         edge[i][j] = 0;
         edge[j][i] = 0;
         int after = countConnectedComponents();
@@ -214,8 +248,58 @@ int Graph::addDirectedEdge(string nodeA, string nodeB) {
 string Graph::getTopologicalSort() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
+  
+  int in_degeee[V] = {0};
+  for (int i = 0; i < V; i++) {
+    if (!is_vertex(i)) continue;
+    for (int j = 0; j < V; j++) {
+      if (!is_vertex(j)) continue;
+      if (edge[i][j] == 1) in_degeee[j]++;
+    }
+  }
+  
+  std::string scc = StrongConnectedComponents();
+  int scc_count = 0;
+  for (int i = 0; i < scc.length(); i++) {
+    if (scc[i] == '\n') scc_count++;
+  }
 
-  return "";
+  int v_count = 0;
+  for (int i = 0; i < V; i++) {
+    if (is_vertex(i)) v_count++;
+  }
+
+  if (scc_count < v_count) return "Error"; // cycle detected
+
+  PriorityQueue pq;
+  int s_count = 0;
+  for (int i = 0; i < V; i++) {
+    if (!is_vertex(i)) continue;
+    if (in_degeee[i] == 0) {
+      pq.push(i);
+      s_count++;
+    }
+  }
+  
+  std::cout << s_count << std::endl;
+  if (s_count == 0) return "Error"; // cycle detected
+
+  std::string result = "";
+  
+  while (pq.size > 0) {
+    int cur = pq.pop();
+    result += to_char(cur);
+    result += " ";
+    for (int i = 0; i < V; i++) {
+      if (!is_vertex(i)) continue;
+      if (edge[cur][i] == 1) {
+        in_degeee[i]--;
+        if (in_degeee[i] == 0) pq.push(i);
+      }
+    }
+  }
+
+  return result;
 
   ///////////      End of Implementation      /////////////
   ///////////////////////////////////////////////////////
@@ -224,8 +308,19 @@ string Graph::getTopologicalSort() {
 int Graph::countDirectedCycle() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
+  
+  int n_cycles = 0;
+  
+  bool visited[V] = {0};
+  bool recStack[V] = {0};
+  for (int i = 0; i < V; i++) {
+    if (!is_vertex(i)) continue;
+    if (!visited[i]) {
+      cycle_dfs(i, visited, recStack, n_cycles);
+    }
+  }
 
-  return 0;
+  return n_cycles;
 
   ///////////      End of Implementation      /////////////
   ///////////////////////////////////////////////////////
@@ -235,10 +330,9 @@ string Graph::StrongConnectedComponents() {
   /////////////////////////////////////////////////////////
   //////////  TODO: Implement From Here      //////////////
 
-  std::string scc[V];
   bool is_scc[V] = {0};
-
   std::string result = "";
+  
   for (int i = 0; i < V; i++) {
     if (!is_vertex(i) || is_scc[i]) continue;
     
@@ -252,7 +346,6 @@ string Graph::StrongConnectedComponents() {
       }
     }
     if (cur != "") {
-      // NOTE: sort cur
       result += cur;
       result += "\n";
     }

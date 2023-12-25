@@ -24,7 +24,7 @@ endfunction(pa4_test)
 
 pa4_test(Task1)
 pa4_test(Task2)
-# pa4_test(Task3)
+pa4_test(Task3)
 pa4_test(Task4)
 pa4_test(Task5)
 pa4_test(Task6)

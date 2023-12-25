@@ -25,6 +25,15 @@ struct WeightedEdge {
   int src, dest, weight;
 };
 
+struct PriorityQueue {
+  int arr[V]; // keep this array sorted in descending order
+  int size;
+
+  PriorityQueue();
+  void push(int u);
+  int pop();
+};
+
 int to_int(std::string vertex_name);
 char to_char(int vertex);
 
@@ -91,6 +100,7 @@ private:
 
   bool is_vertex(int vertex);
   void dfs(int v, bool visited[V]); // update visited
+  void cycle_dfs(int v, bool visited[V], bool recStack[V], int &cycles);
   bool reachable(int start, int end);
   int runKruskal();
   std::string dfs_mst(int s, int d, bool visited[V], std::string path);
