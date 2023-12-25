@@ -123,11 +123,6 @@ int Graph::runKruskal() {
     return a.dest < b.dest;
   });
 
-  // show edges
-  for (int i = 0; i < n_edges; i++) {
-    std::cout << to_char(edges[i].src) << " " << to_char(edges[i].dest) << " " << edges[i].weight << std::endl;
-  }
-
   int n_mst_edges = 0;
   int mst_weight = 0;
 
