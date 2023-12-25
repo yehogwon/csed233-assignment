@@ -1,5 +1,7 @@
 import argparse
 from random import randint, choices, random
+import networkx as nx
+from tqdm import tqdm
 
 CASE_SEP = '**** ****'
 
@@ -40,27 +42,23 @@ class UndirectedGraph:
         return count
     
     def bridges(self) -> int: 
-        # count the number of connected components
-        prev = self.connected_components()
-        bridges = 0
-        # remove each edge and count the number of connected components
+        g = nx.Graph()
         for v in range(V):
-            for w in range(v + 1, V):
-                if not self.is_vertex(v) or not self.is_vertex(w):
+            if not self.is_vertex(v):
+                continue
+            for w in range(V):
+                if not self.is_vertex(w):
                     continue
                 if self.adj_matrix[v][w] == 1:
-                    self.remove_edge(v, w)
-                    if self.connected_components() > prev:
-                        bridges += 1
-                    self.add_edge(v, w)
-        return bridges
+                    g.add_edge(v, w)
+        return len(list(nx.bridges(g)))
 
 def to_char(v: int) -> str:
     return chr(ord('A') + v)
 
 def main(args: argparse.Namespace) -> None:
     cases = []
-    for _ in range(args.N):
+    for _ in tqdm(range(args.N)):
         length = randint(args.min_length, args.max_length)
         pairs = []
         g = UndirectedGraph()

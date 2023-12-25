@@ -1,5 +1,8 @@
 import argparse
 from random import randint, choices, random
+import networkx as nx
+import numpy as np
+from tqdm import tqdm
 
 CASE_SEP = '**** ****'
 
@@ -12,37 +15,65 @@ class DirectedGraph:
     def is_vertex(self, v: int) -> bool:
         return 1 in self.adj_matrix[v] or 1 in [self.adj_matrix[i][v] for i in range(V)]
     
+    def n_vertices(self) -> int:
+        return sum([1 for v in range(V) if self.is_vertex(v)])
+    
     def add_edge(self, v: int, w: int) -> None:
         self.adj_matrix[v][w] = 1
 
     def remove_edge(self, v: int, w: int) -> None:
         self.adj_matrix[v][w] = 0
 
+    def strongly_connected_components(self) -> list[list]: 
+        g = nx.DiGraph(np.array(self.adj_matrix))
+        sccs = list(nx.strongly_connected_components(g))
+        for i in range(len(sccs)): 
+            sccs[i] = [v for v in list(sccs[i]) if self.is_vertex(v)]
+        sccs = [scc for scc in sccs if len(scc) > 0]
+        sccs = [sorted(scc) for scc in sccs]
+        sccs.sort()
+        return sccs
+    
+    def topo_sort(self) -> list[int]:
+        g = nx.DiGraph(np.array(self.adj_matrix))
+        topo_sort = list(nx.lexicographical_topological_sort(g))
+        return [v for v in topo_sort if self.is_vertex(v)]
+    
+    def count_cycles(self) -> int:
+        g = nx.DiGraph(np.array(self.adj_matrix))
+        return len(list(edges for edges in nx.recursive_simple_cycles(g) if len(edges) >= 3))
+
 def to_char(v: int) -> str:
     return chr(ord('A') + v)
 
 def main(args: argparse.Namespace) -> None:
     cases = []
-    for _ in range(args.N):
+    for _ in tqdm(range(args.N)):
         length = randint(args.min_length, args.max_length)
         pairs = []
+        v = randint(args.min_V, args.max_V)
         g = DirectedGraph()
         for _ in range(length): 
             s, d = -1, -1
             _attempts = 0
-            while s == d or (s, d) in pairs:
+            while s == d or (s, d) in pairs or (d, s) in pairs: 
                 if _attempts > 1000:
                     break
-                s, d = randint(0, V - 1), randint(0, V - 1)
+                s, d = randint(0, v - 1), randint(0, v - 1)
                 _attempts += 1
             if _attempts > 1000:
                 continue
             pairs.append((s, d))
             g.add_edge(s, d)
-        if args.mode == 'cc': 
-            answer = str(g.connected_components())
-        elif args.mode == 'brdg':
-            answer = str(g.bridges())
+        if args.mode == 'tpsort': 
+            if len(g.strongly_connected_components()) < g.n_vertices(): # has cycle
+                answer = f'Error\n{g.count_cycles()}'
+                continue
+            else:
+                answer = ' '.join([to_char(v) for v in g.topo_sort()])
+        elif args.mode == 'scc':
+            sccs = g.strongly_connected_components()
+            answer = '\n'.join([' '.join([to_char(v) for v in scc]) for scc in sccs])
 
         cases.append(
             (
@@ -59,5 +90,7 @@ if __name__ == '__main__':
     parser.add_argument('-N', type=int, required=True, help='The number of samples to generate')
     parser.add_argument('--min_length', type=int, required=True, help='The minimum length of the instruction')
     parser.add_argument('--max_length', type=int, required=True, help='The maximum length of the instruction')
+    parser.add_argument('--min_V', type=int, required=True, help='The minimum value of vertices')
+    parser.add_argument('--max_V', type=int, required=True, help='The maximum value of vertices')
     args = parser.parse_args()
     main(args)
