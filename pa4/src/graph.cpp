@@ -90,7 +90,7 @@ bool Graph::reachable(int start, int end) {
 }
 
 int Graph::runKruskal() {
-  // initialize the array `mst`
+  std::cout << "HERE" << std::endl;
   for (int i = 0; i < V; i++) for (int j = 0; j < V; j++) mst[i][j] = 0;
 
   int n_edges = 0;
@@ -111,13 +111,16 @@ int Graph::runKruskal() {
   for (int i = 0; i < V; i++) {
     for (int j = 0; j < i; j++) { // ignore self-loop
       if (edge[i][j] > 0) {
-        edges[index++] = { i, j, edge[i][j] };
+        if (i > j) edges[index++] = { j, i, edge[i][j] };
+        else edges[index++] = { i, j, edge[i][j] };
       }
     }
   }
 
   std::sort(edges, edges + n_edges, [](const WeightedEdge &a, const WeightedEdge &b) {
-    return a.weight < b.weight;
+    if (a.weight != b.weight) return a.weight < b.weight;
+    if (a.src != b.src) return a.src < b.src;
+    return a.dest < b.dest;
   });
 
   int n_mst_edges = 0;
@@ -281,8 +284,7 @@ string Graph::getTopologicalSort() {
     }
   }
   
-  std::cout << s_count << std::endl;
-  if (s_count == 0) return "Error"; // cycle detected
+  if (v_count > 0 && s_count == 0) return "Error"; // cycle detected
 
   std::string result = "";
   
@@ -409,7 +411,7 @@ string Graph::dijkstra(string source, int budget, ofstream &fout) {
 
   pa5_answer = "";
   for (int i = 0; i < V; i++) {
-    if (D[i] > 0 && D[i] < budget) {
+    if (D[i] > 0 && D[i] <= budget) {
       pa5_answer += to_char(i);
       pa5_answer += " " + std::to_string(D[i]) + "\n";
     }
