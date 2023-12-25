@@ -1,5 +1,6 @@
 import argparse
 from random import randint, choices, random
+from tqdm import tqdm
 
 CASE_SEP = '**** ****'
 
@@ -41,7 +42,7 @@ def to_char(v: int) -> str:
 
 def main(args: argparse.Namespace) -> None:
     cases = []
-    for _ in range(args.N):
+    for _ in tqdm(range(args.N)):
         length = randint(args.min_length, args.max_length)
         pairs = []
         g = WeightedDirectedGraph()
