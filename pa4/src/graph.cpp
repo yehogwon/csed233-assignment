@@ -409,7 +409,7 @@ string Graph::dijkstra(string source, int budget, ofstream &fout) {
 
   pa5_answer = "";
   for (int i = 0; i < V; i++) {
-    if (D[i] > 0 && D[i] < budget) {
+    if (D[i] > 0 && D[i] <= budget) {
       pa5_answer += to_char(i);
       pa5_answer += " " + std::to_string(D[i]) + "\n";
     }
