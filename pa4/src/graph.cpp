@@ -281,7 +281,6 @@ string Graph::getTopologicalSort() {
     }
   }
   
-  std::cout << s_count << std::endl;
   if (s_count == 0) return "Error"; // cycle detected
 
   std::string result = "";
