@@ -90,7 +90,7 @@ bool Graph::reachable(int start, int end) {
 }
 
 int Graph::runKruskal() {
-  // initialize the array `mst`
+  std::cout << "HERE" << std::endl;
   for (int i = 0; i < V; i++) for (int j = 0; j < V; j++) mst[i][j] = 0;
 
   int n_edges = 0;
@@ -111,14 +111,22 @@ int Graph::runKruskal() {
   for (int i = 0; i < V; i++) {
     for (int j = 0; j < i; j++) { // ignore self-loop
       if (edge[i][j] > 0) {
-        edges[index++] = { i, j, edge[i][j] };
+        if (i > j) edges[index++] = { j, i, edge[i][j] };
+        else edges[index++] = { i, j, edge[i][j] };
       }
     }
   }
 
   std::sort(edges, edges + n_edges, [](const WeightedEdge &a, const WeightedEdge &b) {
-    return a.weight < b.weight;
+    if (a.weight != b.weight) return a.weight < b.weight;
+    if (a.src != b.src) return a.src < b.src;
+    return a.dest < b.dest;
   });
+
+  // show edges
+  for (int i = 0; i < n_edges; i++) {
+    std::cout << to_char(edges[i].src) << " " << to_char(edges[i].dest) << " " << edges[i].weight << std::endl;
+  }
 
   int n_mst_edges = 0;
   int mst_weight = 0;
