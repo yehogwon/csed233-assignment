@@ -416,6 +416,7 @@ string Graph::dijkstra(string source, int budget, ofstream &fout) {
     }
   }
 
+  if (pa5_answer == "") pa5_answer = "\n";
   fout << pa5_answer;
 
   return pa5_answer;
