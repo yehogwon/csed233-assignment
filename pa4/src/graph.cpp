@@ -351,6 +351,7 @@ string Graph::StrongConnectedComponents() {
       result += "\n";
     }
   }
+  if (result.length() > 0) result.pop_back();
   return result;
 
   ///////////      End of Implementation      /////////////
