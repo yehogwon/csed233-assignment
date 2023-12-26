@@ -266,6 +266,8 @@ string Graph::getTopologicalSort() {
     if (scc[i] == '\n') scc_count++;
   }
 
+  if (scc.length() > 0) scc_count++;
+
   int v_count = 0;
   for (int i = 0; i < V; i++) {
     if (is_vertex(i)) v_count++;
